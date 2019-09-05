@@ -1,0 +1,45 @@
+form.manual-selection-form .filter-wrap {
+  float: none;
+  /*clear: both;*/
+  margin-left: 20%;
+  width: 80%;
+  display: flex;
+  align-items: center;
+}
+
+/* @see https://stackoverflow.com/a/41625751/1551356 */
+form.manual-selection-form .filter-wrap:first-child,
+:not(.filter-wrap) + .filter-wrap {
+  padding-top: 25px;
+}
+
+form.manual-selection-form .filter-wrap .form-item {
+  width: 20% !important;
+  margin-right: 1.5rem;
+}
+
+form.manual-selection-form .filter-wrap .form-item[class$="-max"] {
+  display: flex;
+  align-items: center;
+}
+
+form.manual-selection-form .filter-wrap .form-item[class$="-max"] label {
+  padding-right: 10px;
+  margin-left: -10px;
+  margin-bottom: 0;
+}
+
+form.manual-selection-form .form-item.form-item-manual-select-filter {
+  clear: both;
+}
+
+form.manual-selection-form .form-item.form-item-manual-select-filter.active {
+  margin-bottom: -5em;
+}
+
+form.manual-selection-form .filter-wrap:after {
+  content: "";
+  clear: both;
+  display: table;
+}
+

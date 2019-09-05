@@ -1,0 +1,7 @@
+name: 'Flexible Views'
+type: module
+description: 'Provides a new style plugin for views: table with flexible elements.'
+core: 8.x
+package: 'Views'
+dependencies:
+  - views

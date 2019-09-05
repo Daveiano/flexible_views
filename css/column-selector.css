@@ -1,0 +1,50 @@
+/* Basic form item styling */
+details[id^=edit-flexible-tables-fieldset] .details-wrapper,
+details#edit-flexible-tables-fieldset .details-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+details[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item,
+details#edit-flexible-tables-fieldset .details-wrapper .form-item {
+  float: none;
+  margin-right: 0;
+}
+
+details[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons,
+details#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons {
+  margin: 0 15px -1.75em 15px;
+  height: 200px;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+}
+
+details[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons > div,
+details#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
+  background-color: #f3f3f3;
+  cursor: pointer;
+  width: 40px;
+  height: 49%;
+
+  font-size: 2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+details[id^=edit-flexible-tables-fieldset] select,
+details#edit-flexible-tables-fieldset select {
+  height: 200px;
+}
+
+/* Select logic */
+details[id^=edit-flexible-tables-fieldset] option:disabled,
+details#edit-flexible-tables-fieldset option:disabled {
+  display: none;
+}
+
+.js-form-item.form-item.form-item-selected-columns-submit,
+.js-form-item.form-item.form-item-selected-columns-submit-order {
+  display: none !important;
+}

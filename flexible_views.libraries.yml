@@ -1,0 +1,18 @@
+column_selector:
+  version: 1.x
+  css:
+    theme:
+      css/column-selector.css: {}
+  js:
+    js/column-selector.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+
+manual_selection:
+  version: 1.x
+  css:
+    theme:
+      css/manual-selection.css: {}

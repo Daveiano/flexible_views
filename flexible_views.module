@@ -1,0 +1,199 @@
+<?php
+
+/**
+ * @file
+ * Contains flexible_views.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\views\Views;
+
+/**
+ * Implements hook_help().
+ */
+function flexible_views_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the flexible_views module.
+    case 'help.page.flexible_views':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides a new style plugin for views: table with flexible elements.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function flexible_views_theme() {
+  return [
+    // On behalf of a plugin.
+    'flexible_views_style_plugin_flexible_table' => [
+      'render element' => 'form',
+      'file' => 'flexible_views.theme.inc',
+    ],
+    'views_view_flexible_table' => [
+      'render element' => 'form',
+      'file' => 'flexible_views.theme.inc',
+    ],
+  ];
+}
+
+/**
+ * Implements template_preprocess_pager().
+ */
+function flexible_views_preprocess_pager(&$variables) {
+  $element = $variables['pager']['#element'];
+  $parameters = $variables['pager']['#parameters'];
+  $quantity = $variables['pager']['#quantity'];
+  $route_name = $variables['pager']['#route_name'];
+  $route_parameters = isset($variables['pager']['#route_parameters']) ? $variables['pager']['#route_parameters'] : [];
+  global $pager_page_array, $pager_total;
+
+  // Get the current view.
+  $route = \Drupal::routeMatch()->getRouteObject();
+  if ($route) {
+    // Get view id and display id from route.
+    $view_id = $route->getDefault('view_id');
+    $display_id = $route->getDefault('display_id');
+
+    if (!empty($view_id) && !empty($display_id)) {
+      // Get the view by id.
+      $view = Views::getView($view_id);
+      $view->initHandlers();
+
+      // Normally, all exposed filters are included in the parameters, so they
+      // are included in the pager links as parameters. We only want this ones
+      // to be active, which we have enables via the manual_selection exposed
+      // filter plugin.
+      if (isset($view->display_handler->options["exposed_form"]["type"]) && $view->display_handler->options["exposed_form"]["type"] === 'manual_selection') {
+        $view_exposed_input = $view->getExposedInput();
+
+        if (!empty($view_exposed_input)) {
+          $new_parameters = [];
+
+          foreach ($parameters as $parameter => $value) {
+            if (array_key_exists($parameter, $view_exposed_input)) {
+              $new_parameters[$parameter] = $value;
+            }
+          }
+
+          $parameters = $new_parameters;
+        }
+        else {
+          $parameters = [];
+        }
+      }
+    }
+  }
+
+  // Nothing to do if there is only one page.
+  if ($pager_total[$element] <= 1) {
+    return;
+  }
+  $tags = $variables['pager']['#tags'];
+
+  // Calculate various markers within this pager piece:
+  // Middle is used to "center" pages around the current page.
+  $pager_middle = ceil($quantity / 2);
+
+  // current is the page we are currently paged to.
+  $pager_current = $pager_page_array[$element] + 1;
+
+  // first is the first page listed by this pager piece (re quantity).
+  $pager_first = $pager_current - $pager_middle + 1;
+
+  // last is the last page listed by this pager piece (re quantity).
+  $pager_last = $pager_current + $quantity - $pager_middle;
+
+  // max is the maximum page number.
+  $pager_max = $pager_total[$element];
+
+  // End of marker calculations.
+  // Prepare for generation loop.
+  $i = $pager_first;
+  if ($pager_last > $pager_max) {
+
+    // Adjust "center" if at end of query.
+    $i = $i + ($pager_max - $pager_last);
+    $pager_last = $pager_max;
+  }
+  if ($i <= 0) {
+
+    // Adjust "center" if at start of query.
+    $pager_last = $pager_last + (1 - $i);
+    $i = 1;
+  }
+
+  // End of generation loop preparation.
+  // Create the "first" and "previous" links if we are not on the first page.
+  if ($pager_page_array[$element] > 0) {
+    $items['first'] = array();
+    $options = array(
+      'query' => pager_query_add_page($parameters, $element, 0),
+    );
+    $items['first']['href'] = \Drupal::url($route_name, $route_parameters, $options);
+    if (isset($tags[0])) {
+      $items['first']['text'] = $tags[0];
+    }
+    $items['previous'] = array();
+    $options = array(
+      'query' => pager_query_add_page($parameters, $element, $pager_page_array[$element] - 1),
+    );
+    $items['previous']['href'] = \Drupal::url($route_name, $route_parameters, $options);
+    if (isset($tags[1])) {
+      $items['previous']['text'] = $tags[1];
+    }
+  }
+  if ($i != $pager_max) {
+
+    // Add an ellipsis if there are further previous pages.
+    if ($i > 1) {
+      $variables['ellipses']['previous'] = TRUE;
+    }
+
+    // Now generate the actual pager piece.
+    for (; $i <= $pager_last && $i <= $pager_max; $i++) {
+      $options = array(
+        'query' => pager_query_add_page($parameters, $element, $i - 1),
+      );
+      $items['pages'][$i]['href'] = \Drupal::url($route_name, $route_parameters, $options);
+      if ($i == $pager_current) {
+        $variables['current'] = $i;
+      }
+    }
+
+    // Add an ellipsis if there are further next pages.
+    if ($i < $pager_max + 1) {
+      $variables['ellipses']['next'] = TRUE;
+    }
+  }
+
+  // Create the "next" and "last" links if we are not on the last page.
+  if ($pager_page_array[$element] < $pager_max - 1) {
+    $items['next'] = array();
+    $options = array(
+      'query' => pager_query_add_page($parameters, $element, $pager_page_array[$element] + 1),
+    );
+    $items['next']['href'] = \Drupal::url($route_name, $route_parameters, $options);
+    if (isset($tags[3])) {
+      $items['next']['text'] = $tags[3];
+    }
+    $items['last'] = array();
+    $options = array(
+      'query' => pager_query_add_page($parameters, $element, $pager_max - 1),
+    );
+    $items['last']['href'] = \Drupal::url($route_name, $route_parameters, $options);
+    if (isset($tags[4])) {
+      $items['last']['text'] = $tags[4];
+    }
+  }
+  $variables['items'] = $items;
+
+  // The rendered link needs to play well with any other query parameter used
+  // on the page, like exposed filters, so for the cacheability all query
+  // parameters matter.
+  $variables['#cache']['contexts'][] = 'url.query_args';
+}
