@@ -1,18 +1,31 @@
 /* Basic form item styling */
-details[id^=edit-flexible-tables-fieldset] .details-wrapper,
-details#edit-flexible-tables-fieldset .details-wrapper {
-  display: flex;
-  align-items: center;
+/* *-Selector is because it can be an details or an div */
+*[id^=edit-flexible-tables-fieldset] {
+  width: 100%;
+  border-top: none !important;
 }
 
-details[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item,
-details#edit-flexible-tables-fieldset .details-wrapper .form-item {
+*[id^=edit-flexible-tables-fieldset] .details-wrapper,
+*#edit-flexible-tables-fieldset .details-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+*[id^=edit-flexible-tables-fieldset] .details-wrapper.fake-detail,
+*#edit-flexible-tables-fieldset .details-wrapper.fake-detail {
+  justify-content: flex-end;
+}
+
+
+*[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item,
+*#edit-flexible-tables-fieldset .details-wrapper .form-item {
   float: none;
   margin-right: 0;
 }
 
-details[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons,
-details#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons {
+*[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons,
+*#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons {
   margin: 0 15px -1.75em 15px;
   height: 200px;
   display: flex;
@@ -20,8 +33,8 @@ details#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons {
   justify-content: space-between;
 }
 
-details[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons > div,
-details#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
+*[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons > div,
+*#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
   background-color: #f3f3f3;
   cursor: pointer;
   width: 40px;
@@ -33,14 +46,14 @@ details#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons >
   align-items: center;
 }
 
-details[id^=edit-flexible-tables-fieldset] select,
-details#edit-flexible-tables-fieldset select {
+*[id^=edit-flexible-tables-fieldset] select,
+*#edit-flexible-tables-fieldset select {
   height: 200px;
 }
 
 /* Select logic */
-details[id^=edit-flexible-tables-fieldset] option:disabled,
-details#edit-flexible-tables-fieldset option:disabled {
+*[id^=edit-flexible-tables-fieldset] option:disabled,
+*#edit-flexible-tables-fieldset option:disabled {
   display: none;
 }
 

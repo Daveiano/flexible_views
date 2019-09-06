@@ -32,6 +32,33 @@ class ColumnSelector extends FilterPluginBase {
   /**
    * {@inheritdoc}
    */
+  public function defineOptions() {
+    $options = parent::defineOptions();
+
+    $options['wrap_with_details'] = ['default' => '1'];
+
+    return $options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+    parent::buildOptionsForm($form, $form_state);
+
+    $form['wrap_with_details'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Wrap with details element'),
+      '#description' => $this->t('Wrap the column selector section with a details element, so it can be collapsed.'),
+      '#default_value' => $this->options['wrap_with_details'],
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function adminSummary() {
     return $this->value;
   }
@@ -104,7 +131,7 @@ class ColumnSelector extends FilterPluginBase {
     $options_default_visible = array_reverse($options_default_visible);
 
     $form['flexible_tables_fieldset'] = [
-      '#type' => 'details',
+      '#type' => $this->options['wrap_with_details'] ? 'details' : 'container',
       '#open' => FALSE,
       '#title' => $this->options['expose']['label'],
       '#attributes' => [
@@ -122,6 +149,7 @@ class ColumnSelector extends FilterPluginBase {
       '#attributes' => [
         'id' => 'flexible-table-available-columns',
       ],
+      '#prefix' => $this->options['wrap_with_details'] ? '' : '<div class="details-wrapper fake-detail">',
     ];
 
     $move_left_right_buttons = <<<EOT
@@ -173,6 +201,7 @@ EOT;
       '#attributes' => [
         'id' => 'flexible-table-selected-columns-submit-order',
       ],
+      '#suffix' => $this->options['wrap_with_details'] ? '' : '</div>',
     ];
 
     // Add our submit routine to process.
