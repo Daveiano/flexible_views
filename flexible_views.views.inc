@@ -9,7 +9,7 @@
  * Implements hook_views_data_alter().
  */
 function flexible_views_views_data_alter(&$data) {
-  $data['node']['column_selector'] = [
+  $data['views']['column_selector'] = [
     'title' => t('Visible Column Selector'),
     'filter' => [
       'title' => t('Visible Column Selector'),
