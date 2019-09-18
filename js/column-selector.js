@@ -112,14 +112,14 @@
 
     // Add the correct sort order.
     var sortOrderFromInput = columnOrder,
-      sortedOptions = $selectedColumnsSelect.find('option').sort(function (a, b) {
+      sortedOptions = sortOrderFromInput.length > 0 ? $selectedColumnsSelect.find('option').sort(function (a, b) {
         if (sortOrderFromInput.indexOf($(a).val()) > sortOrderFromInput.indexOf($(b).val())) {
           return 1;
         }
         else {
           return -1;
         }
-      });
+      }) : $selectedColumnsSelect.find('option');
 
     $selectedColumnsSelect.html('').append(sortedOptions);
 

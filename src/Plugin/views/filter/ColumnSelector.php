@@ -128,7 +128,7 @@ class ColumnSelector extends FilterPluginBase {
       }
     }
 
-    $options_default_visible = array_reverse($options_default_visible);
+    //$options_default_visible = array_reverse($options_default_visible);
 
     $form['flexible_tables_fieldset'] = [
       '#type' => $this->options['wrap_with_details'] ? 'details' : 'container',
