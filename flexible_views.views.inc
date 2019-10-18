@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Includes flexible_views.views.inc
+ * Includes flexible_views.views.inc.
  */
 
 /**

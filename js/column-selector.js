@@ -5,29 +5,7 @@
 
 (function ($, Drupal) {
 
-  var initialized;
-
-  function init() {
-    if (!initialized) {
-      initialized = true;
-
-      //Drupal.flexible_views_column_selector.populateRealSelect($('select#flexible-table-selected-columns'), $('select#flexible-table-selected-columns-submit'));
-      //Drupal.flexible_views_column_selector.populateSortOrder($('select#flexible-table-selected-columns'));
-    }
-  }
-
   Drupal.flexible_views_column_selector = {};
-
-  Drupal.flexible_views_column_selector.populateRealSelect = function ($selectedColumnsSelect, $realSelectedColumnsSelect) {
-    var $selectedOptionsForSubmit = $selectedColumnsSelect.find('option'),
-      valueForSubmit = [];
-
-    $selectedOptionsForSubmit.each(function () {
-      valueForSubmit.push($(this).val());
-    });
-
-    $realSelectedColumnsSelect.val(valueForSubmit);
-  };
 
   Drupal.flexible_views_column_selector.populateSortOrder = function ($selectedColumnsSelect) {
     // Get the sort order of the fields and save it to the hidden order field.
@@ -40,7 +18,7 @@
     $('#flexible-table-selected-columns-submit-order').val(JSON.stringify(sortOrder));
   };
 
-  Drupal.flexible_views_column_selector.moveRight = function ($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect) {
+  Drupal.flexible_views_column_selector.moveRight = function ($availableColumnsSelect, $selectedColumnsSelect) {
     var selected = $availableColumnsSelect.val();
 
     // Move and show/hide options in the visible selects.
@@ -55,12 +33,11 @@
       $availableColumnsSelect.find('option[value="' + value + '"]').remove();
     });
 
-    // Populate the value in fake select.
-    Drupal.flexible_views_column_selector.populateRealSelect($selectedColumnsSelect, $realSelectedColumnsSelect);
+    // Populate the value in the order textfield.
     Drupal.flexible_views_column_selector.populateSortOrder($selectedColumnsSelect);
   };
 
-  Drupal.flexible_views_column_selector.moveLeft = function ($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect) {
+  Drupal.flexible_views_column_selector.moveLeft = function ($availableColumnsSelect, $selectedColumnsSelect) {
     var selected = $selectedColumnsSelect.val();
 
     selected.forEach(function (value) {
@@ -74,27 +51,26 @@
       $selectedColumnsSelect.find('option[value="' + value + '"]').remove();
     });
 
-    // Populate the value in fake select.
-    Drupal.flexible_views_column_selector.populateRealSelect($selectedColumnsSelect, $realSelectedColumnsSelect);
+    // Populate the value in the order textfield.
     Drupal.flexible_views_column_selector.populateSortOrder($selectedColumnsSelect);
   };
 
-  Drupal.flexible_views_column_selector.moveTop = function ($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect) {
+  Drupal.flexible_views_column_selector.moveTop = function ($availableColumnsSelect, $selectedColumnsSelect) {
     // Get the selected option(s) and move them up.
     $selectedColumnsSelect.find('option:selected').each(function () {
       $(this).prev(':not(:selected)').detach().insertAfter($(this));
     });
 
-    Drupal.flexible_views_column_selector.populateRealSelect($selectedColumnsSelect, $realSelectedColumnsSelect);
+    // Populate the value in the order textfield.
     Drupal.flexible_views_column_selector.populateSortOrder($selectedColumnsSelect);
   };
 
-  Drupal.flexible_views_column_selector.moveDown = function ($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect) {
+  Drupal.flexible_views_column_selector.moveDown = function ($availableColumnsSelect, $selectedColumnsSelect) {
     $($selectedColumnsSelect.find('option:selected').get().reverse()).each(function () {
       $(this).next(':not(:selected)').detach().insertBefore($(this));
     });
 
-    Drupal.flexible_views_column_selector.populateRealSelect($selectedColumnsSelect, $realSelectedColumnsSelect);
+    // Populate the value in the order textfield.
     Drupal.flexible_views_column_selector.populateSortOrder($selectedColumnsSelect);
   };
 
@@ -102,12 +78,8 @@
 
   Drupal.behaviors.flexible_views_column_selector.attach = function (context, settings) {
 
-    // Some initial work (executed only once).
-    init();
-
     var $availableColumnsSelect = $('select#flexible-table-available-columns'),
       $selectedColumnsSelect = $('select#flexible-table-selected-columns'),
-      $realSelectedColumnsSelect = $('select#flexible-table-selected-columns-submit'),
       columnOrder = $('#flexible-table-selected-columns-submit-order').val() ? JSON.parse($('#flexible-table-selected-columns-submit-order').val()) : [];
 
     // Add the correct sort order.
@@ -126,26 +98,26 @@
     // Click event handler for moving columns.
     $('.form-item.move-buttons .move-right').once().on('click', function () {
       if ($availableColumnsSelect.val().length > 0) {
-        Drupal.flexible_views_column_selector.moveRight($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect);
+        Drupal.flexible_views_column_selector.moveRight($availableColumnsSelect, $selectedColumnsSelect);
       }
     });
 
     $('.form-item.move-buttons .move-left').once().on('click', function () {
       if ($selectedColumnsSelect.val().length > 0) {
-        Drupal.flexible_views_column_selector.moveLeft($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect);
+        Drupal.flexible_views_column_selector.moveLeft($availableColumnsSelect, $selectedColumnsSelect);
         $availableColumnsSelect.val('');
       }
     });
 
     $('.form-item.move-buttons .move-top').once().on('click', function () {
       if ($selectedColumnsSelect.val().length > 0) {
-        Drupal.flexible_views_column_selector.moveTop($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect);
+        Drupal.flexible_views_column_selector.moveTop($availableColumnsSelect, $selectedColumnsSelect);
       }
     });
 
     $('.form-item.move-buttons .move-down').once().on('click', function () {
       if ($selectedColumnsSelect.val().length > 0) {
-        Drupal.flexible_views_column_selector.moveDown($availableColumnsSelect, $selectedColumnsSelect, $realSelectedColumnsSelect);
+        Drupal.flexible_views_column_selector.moveDown($availableColumnsSelect, $selectedColumnsSelect);
       }
     });
 

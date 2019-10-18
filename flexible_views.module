@@ -17,7 +17,7 @@ function flexible_views_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.flexible_views':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
-      $output .= '<p>' . t('Provides a new style plugin for views: table with flexible elements.') . '</p>';
+      $output .= '<p>' . t('Adds better usability and some improvements to Core Views module.') . '</p>';
       return $output;
 
     default:
@@ -29,7 +29,6 @@ function flexible_views_help($route_name, RouteMatchInterface $route_match) {
  */
 function flexible_views_theme() {
   return [
-    // On behalf of a plugin.
     'flexible_views_style_plugin_flexible_table' => [
       'render element' => 'form',
       'file' => 'flexible_views.theme.inc',
@@ -99,16 +98,16 @@ function flexible_views_preprocess_pager(&$variables) {
   // Middle is used to "center" pages around the current page.
   $pager_middle = ceil($quantity / 2);
 
-  // current is the page we are currently paged to.
+  // Current is the page we are currently paged to.
   $pager_current = $pager_page_array[$element] + 1;
 
-  // first is the first page listed by this pager piece (re quantity).
+  // First is the first page listed by this pager piece (re quantity).
   $pager_first = $pager_current - $pager_middle + 1;
 
-  // last is the last page listed by this pager piece (re quantity).
+  // Last is the last page listed by this pager piece (re quantity).
   $pager_last = $pager_current + $quantity - $pager_middle;
 
-  // max is the maximum page number.
+  // Max is the maximum page number.
   $pager_max = $pager_total[$element];
 
   // End of marker calculations.
@@ -130,18 +129,18 @@ function flexible_views_preprocess_pager(&$variables) {
   // End of generation loop preparation.
   // Create the "first" and "previous" links if we are not on the first page.
   if ($pager_page_array[$element] > 0) {
-    $items['first'] = array();
-    $options = array(
+    $items['first'] = [];
+    $options = [
       'query' => pager_query_add_page($parameters, $element, 0),
-    );
+    ];
     $items['first']['href'] = \Drupal::url($route_name, $route_parameters, $options);
     if (isset($tags[0])) {
       $items['first']['text'] = $tags[0];
     }
-    $items['previous'] = array();
-    $options = array(
+    $items['previous'] = [];
+    $options = [
       'query' => pager_query_add_page($parameters, $element, $pager_page_array[$element] - 1),
-    );
+    ];
     $items['previous']['href'] = \Drupal::url($route_name, $route_parameters, $options);
     if (isset($tags[1])) {
       $items['previous']['text'] = $tags[1];
@@ -156,9 +155,9 @@ function flexible_views_preprocess_pager(&$variables) {
 
     // Now generate the actual pager piece.
     for (; $i <= $pager_last && $i <= $pager_max; $i++) {
-      $options = array(
+      $options = [
         'query' => pager_query_add_page($parameters, $element, $i - 1),
-      );
+      ];
       $items['pages'][$i]['href'] = \Drupal::url($route_name, $route_parameters, $options);
       if ($i == $pager_current) {
         $variables['current'] = $i;
@@ -173,18 +172,18 @@ function flexible_views_preprocess_pager(&$variables) {
 
   // Create the "next" and "last" links if we are not on the last page.
   if ($pager_page_array[$element] < $pager_max - 1) {
-    $items['next'] = array();
-    $options = array(
+    $items['next'] = [];
+    $options = [
       'query' => pager_query_add_page($parameters, $element, $pager_page_array[$element] + 1),
-    );
+    ];
     $items['next']['href'] = \Drupal::url($route_name, $route_parameters, $options);
     if (isset($tags[3])) {
       $items['next']['text'] = $tags[3];
     }
-    $items['last'] = array();
-    $options = array(
+    $items['last'] = [];
+    $options = [
       'query' => pager_query_add_page($parameters, $element, $pager_max - 1),
-    );
+    ];
     $items['last']['href'] = \Drupal::url($route_name, $route_parameters, $options);
     if (isset($tags[4])) {
       $items['last']['text'] = $tags[4];

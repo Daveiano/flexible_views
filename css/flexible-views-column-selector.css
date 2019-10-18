@@ -2,7 +2,6 @@
 /* *-Selector is because it can be an details or an div */
 *[id^=edit-flexible-tables-fieldset] {
   width: 100%;
-  border-top: none !important;
 }
 
 *[id^=edit-flexible-tables-fieldset] .details-wrapper,
@@ -35,11 +34,11 @@
 
 *[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons > div,
 *#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
-  background-color: #f3f3f3;
+  background-color: white;
   cursor: pointer;
   width: 40px;
-  height: 49%;
-
+  height: 45%;
+  border: 1px solid darkgrey;
   font-size: 2em;
   display: flex;
   justify-content: center;
@@ -57,7 +56,6 @@
   display: none;
 }
 
-.js-form-item.form-item.form-item-selected-columns-submit,
 .js-form-item.form-item.form-item-selected-columns-submit-order {
-  display: none !important;
+  /*display: none !important;*/
 }

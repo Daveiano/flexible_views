@@ -5,12 +5,8 @@
  * Preprocessors and theme functions for the flexible views tables plugin..
  */
 
-use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Form\FormState;
 use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\Checkboxes;
-use Drupal\Core\Render\Element\Radios;
 use Drupal\Core\Url;
 use Drupal\Core\Template\Attribute;
 use Drupal\Core\Utility\TableSort;
@@ -98,7 +94,10 @@ function template_preprocess_flexible_views_style_plugin_flexible_table(array &$
   }
 
   // Add the special 'None' row.
-  $rows[] = [['data' => t('None'), 'colspan' => 6], ['align' => 'center', 'data' => $form['default'][-1]], ['colspan' => 2]];
+  $rows[] = [
+    ['data' => t('None'), 'colspan' => 6],
+    ['align' => 'center', 'data' => $form['default'][-1]], ['colspan' => 2],
+  ];
 
   // Unset elements from the form array that are used to build the table so that
   // they are not rendered twice.
@@ -212,8 +211,8 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
       'uid',
     ]);
 
-    $field_flexible_logic_is_visible = isset($query['selected_columns_submit']) ?
-      in_array($field, $query['selected_columns_submit']) || $always_visible :
+    $field_flexible_logic_is_visible = isset($query['selected_columns_submit_order']) ?
+      in_array($field, Json::decode($query['selected_columns_submit_order'])) || $always_visible :
       $options['info'][$field]['default_visible'] || $always_visible;
 
     // Render the header labels.

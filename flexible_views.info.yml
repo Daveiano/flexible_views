@@ -1,7 +1,7 @@
 name: 'Flexible Views'
 type: module
-description: 'Provides a new style plugin for views: table with flexible elements.'
+description: 'Adds better usability and some improvements to Core Views module.'
 core: 8.x
 package: 'Views'
 dependencies:
-  - views
+  - drupal:views

@@ -1,8 +1,7 @@
 column_selector:
-  version: 1.x
   css:
     theme:
-      css/column-selector.css: {}
+      css/flexible-views-column-selector.css: {}
   js:
     js/column-selector.js: {}
   dependencies:
@@ -12,7 +11,6 @@ column_selector:
     - core/jquery.once
 
 manual_selection:
-  version: 1.x
   css:
     theme:
-      css/manual-selection.css: {}
+      css/flexible-views-manual-selection.css: {}
