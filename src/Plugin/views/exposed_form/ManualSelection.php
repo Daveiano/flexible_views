@@ -96,13 +96,11 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     ];
 
     /* @var \Drupal\views\Plugin\views\HandlerBase $filter */
-    // TODO: Exclude column_selector.
     foreach ($filters as $label => $filter) {
-      if ($filter->isExposed()) {
+      if ($filter->isExposed() && $filter->realField !== 'column_selector') {
         $form['filter_always_visible']['#options'][$label] = $filter->options["expose"]["label"];
       }
     }
-
   }
 
   /**

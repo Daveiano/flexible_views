@@ -115,7 +115,7 @@ class ColumnSelector extends FilterPluginBase {
     if (isset($query['selected_columns_submit_order'])) {
       $query_selected_columns = $this::mapSelectedColumnsSubmit(Json::decode($query['selected_columns_submit_order']), $fields_info);
     }
-    elseif (isset($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order'])) {
+    elseif (isset($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order']) && $_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order'] !== FALSE) {
       $query_selected_columns = $this::mapSelectedColumnsSubmit(Json::decode($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order']), $fields_info);
     }
 
@@ -154,7 +154,7 @@ class ColumnSelector extends FilterPluginBase {
     $form['flexible_tables_fieldset']['available_columns'] = [
       '#type' => 'select',
       '#title' => t('Available Columns'),
-      '#options' => isset($query_selected_columns) ? array_diff($options, $query_selected_columns) : array_diff($options, $options_default_visible),
+      '#options' => count($query_selected_columns) > 0 ? array_diff($options, $query_selected_columns) : array_diff($options, $options_default_visible),
       '#size' => count($options),
       '#multiple' => TRUE,
       '#attributes' => [
@@ -175,7 +175,7 @@ EOT;
     $form['flexible_tables_fieldset']['selected_columns'] = [
       '#type' => 'select',
       '#title' => t('Selected Columns'),
-      '#options' => isset($query_selected_columns) ? $query_selected_columns : $options_default_visible,
+      '#options' => count($query_selected_columns) > 0 ? $query_selected_columns : $options_default_visible,
       '#size' => count($options),
       '#multiple' => TRUE,
       '#attributes' => [

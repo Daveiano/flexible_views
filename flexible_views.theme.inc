@@ -160,9 +160,18 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
     $query += $view->exposed_raw_input;
   }
 
+  $display_id = ($view->display_handler->isDefaulted('filters')) ? 'default' : $view->current_display;
+
   // Get the column order.
-  if ($query['selected_columns_submit_order']) {
-    $column_order = Json::decode($query['selected_columns_submit_order']);
+  if ($query['selected_columns_submit_order'] && $query['selected_columns_submit_order'] !== FALSE) {
+    $column_settings = $query['selected_columns_submit_order'];
+  }
+  elseif (isset($_SESSION['views'][$view->storage->id()][$display_id]['selected_columns_submit_order']) && $_SESSION['views'][$view->storage->id()][$display_id]['selected_columns_submit_order'] !== FALSE) {
+    $column_settings = $_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order'];
+  }
+
+  if (isset($column_settings)) {
+    $column_order = Json::decode($column_settings);
 
     // Add the columns which are always visible.
     $columns_reverse = array_reverse($columns, TRUE);
@@ -211,8 +220,8 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
       'uid',
     ]);
 
-    $field_flexible_logic_is_visible = isset($query['selected_columns_submit_order']) ?
-      in_array($field, Json::decode($query['selected_columns_submit_order'])) || $always_visible :
+    $field_flexible_logic_is_visible = isset($column_settings) ?
+      in_array($field, Json::decode($column_settings)) || $always_visible :
       $options['info'][$field]['default_visible'] || $always_visible;
 
     // Render the header labels.
