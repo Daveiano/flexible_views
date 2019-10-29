@@ -112,10 +112,10 @@ class ColumnSelector extends FilterPluginBase {
     // Get the selected columns from the query of from the session storage.
     $display_id = ($this->view->display_handler->isDefaulted('filters')) ? 'default' : $this->view->current_display;
     $query_selected_columns = [];
-    if (isset($query['selected_columns_submit_order'])) {
+    if (isset($query['selected_columns_submit_order']) && !empty($query['selected_columns_submit_order'])) {
       $query_selected_columns = $this::mapSelectedColumnsSubmit(Json::decode($query['selected_columns_submit_order']), $fields_info);
     }
-    elseif (isset($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order']) && $_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order'] !== FALSE) {
+    elseif (isset($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order']) && !empty($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order'])) {
       $query_selected_columns = $this::mapSelectedColumnsSubmit(Json::decode($_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order']), $fields_info);
     }
 

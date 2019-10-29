@@ -163,10 +163,10 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
   $display_id = ($view->display_handler->isDefaulted('filters')) ? 'default' : $view->current_display;
 
   // Get the column order.
-  if ($query['selected_columns_submit_order'] && $query['selected_columns_submit_order'] !== FALSE) {
+  if ($query['selected_columns_submit_order'] && !empty($query['selected_columns_submit_order'])) {
     $column_settings = $query['selected_columns_submit_order'];
   }
-  elseif (isset($_SESSION['views'][$view->storage->id()][$display_id]['selected_columns_submit_order']) && $_SESSION['views'][$view->storage->id()][$display_id]['selected_columns_submit_order'] !== FALSE) {
+  elseif (isset($_SESSION['views'][$view->storage->id()][$display_id]['selected_columns_submit_order']) && !empty($_SESSION['views'][$view->storage->id()][$display_id]['selected_columns_submit_order'])) {
     $column_settings = $_SESSION['views'][$this->view->storage->id()][$display_id]['selected_columns_submit_order'];
   }
 

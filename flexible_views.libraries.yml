@@ -14,3 +14,8 @@ manual_selection:
   css:
     theme:
       css/flexible-views-manual-selection.css: {}
+  js:
+    js/flexible-views-manual-selection.js: {}
+  dependecies:
+    - core/jquery
+    - core/drupal

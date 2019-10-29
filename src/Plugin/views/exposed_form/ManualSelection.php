@@ -142,7 +142,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
    * @return array
    *   The form array.
    */
-  public static function sortCheckboxes(array &$form, array $filter_always_visible = []) {
+  public static function sortCheckboxes(array $form, array $filter_always_visible = []) {
     $checkboxes = array_filter(array_keys($form), function ($element) {
       return strpos($element, '_check_deactivate');
     });
@@ -188,12 +188,9 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
   public function renderExposedForm($block = FALSE) {
     $form = parent::renderExposedForm($block);
 
-    $form['#attached']['library'][] = 'flexible_views/manual_selection';
-    $form['#attributes']['class'][] = 'manual-selection-form';
-
     // Set the correct weight for the deactivate_checkboxes.
     $filter_always_visible = $this->options['filter_always_visible'] ? $this->options['filter_always_visible'] : [];
-    $this->sortCheckboxes($form, $filter_always_visible);
+    $form = self::sortCheckboxes($form, $filter_always_visible);
 
     return $form;
   }
@@ -202,7 +199,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public function exposedFormAlter(&$form, FormStateInterface $form_state) {
-    parent::exposedFormAlter($form, $form_state);
+    $form['#attached']['library'][] = 'flexible_views/manual_selection';
+    $form['#attributes']['class'][] = 'manual-selection-form';
 
     $filters = array_keys($form['#info']);
     $query = TableSort::getQueryParameters(\Drupal::request());
@@ -210,14 +208,12 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     $filter_always_visible = array_filter($this->options['filter_always_visible']);
     $manual_select_filter_options = [];
 
-    // Add always visible options hidden to the view, because we cant access
-    // them in static callbacks.
-    // TODO: Remove when static callback problem is solved.
-    $form['filter_always_visible'] = [
+    // We add a hidden field to the form to store the selected filters.
+    $form['selected_filters'] = [
       '#type' => 'hidden',
-      '#value' => $filter_always_visible,
+      '#size' => 1024,
+      '#maxlength' => 1024,
     ];
-
 
     $selected_filters_tempstore = $this->tempStore->get($this->setTempStorageId()) ? $this->tempStore->get($this->setTempStorageId()) : [];
 
@@ -244,35 +240,41 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           '#type' => 'checkbox',
           '#title' => $form['#info'][$filter]['label'],
           '#checked' => array_key_exists($filter_name, $query) || in_array($filter_name, $selected_filters_tempstore) ? TRUE : FALSE,
-          '#access' => array_key_exists($filter_name, $query) || in_array($filter_name, $selected_filters_tempstore) ? TRUE : FALSE,
+          #'#access' => array_key_exists($filter_name, $query) || in_array($filter_name, $selected_filters_tempstore) ? TRUE : FALSE,
           '#prefix' => "<div class='filter-wrap'>",
-          '#ajax' => [
-            'callback' => 'Drupal\flexible_views\Plugin\views\exposed_form\ManualSelection::deactivateFilterCallback',
-            'event' => 'change',
-            'wrapper' => $form['#id'],
-            'effect' => 'fade',
-            'method' => 'replace',
+          // TODO - Handle via JS ok? We use JS because we cant use a regex to
+          // test something like the input CONTAINS the value "$filter name".
+          '#states' => [
+            'visible' => [
+              ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
+            ],
           ],
         ];
 
         // Hide the labels and hide the filters if the checkbox is set to false.
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
-          $form[$form['#info'][$filter]['operator']]['#states']['visible'][] = [
-            ":input[name='{$filter_name}_check_deactivate']" => [
-              'checked' => TRUE,
-            ],
+          // TODO.
+          $form[$form['#info'][$filter]['operator']]['#states']['disabled'] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
           ];
         }
 
         $form[$filter_name]['#title_display'] = 'invisible';
-        $form[$filter_name]['#states']['visible'][] = [
-          ":input[name='{$filter_name}_check_deactivate']" => [
-            'checked' => TRUE,
-          ],
-        ];
+
+        if (isset($form[$filter_name]['value'])) {
+          $form[$filter_name]['value']['#states']['disabled'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
+          ];
+        }
+        else {
+          $form[$filter_name]['#states']['disabled'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
+          ];
+        }
 
         // If there is an min/max operator, hide the label from the min element.
+        // TODO: Add state condition on checkbox for every state for min/max.
         if (isset($form[$filter_name]['min'])) {
           $form[$filter_name]['min']['#title_display'] = 'invisible';
         }
@@ -283,7 +285,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         // Hide the filters if they are not active.
         if ((!array_key_exists($filter_name, $query) && !in_array($filter_name, $selected_filters_tempstore)) || (array_key_exists($filter_name, $input) && (!array_key_exists($form['#info'][$filter]['operator'], $input) && $form['#info'][$filter]['operator'] !== ""))) {
           // Exposed filter.
-          $form[$filter_name]['#access'] = FALSE;
+          /*$form[$filter_name]['#access'] = FALSE;
 
           // Exposed operator.
           if ($form['#info'][$filter]['operator'] !== '' && isset($form[$form['#info'][$filter]['operator']])) {
@@ -293,6 +295,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           // Checkbox.
           $form[$filter_name . '_check_deactivate']['#checked'] = FALSE;
           $form[$filter_name . '_check_deactivate']['#access'] = FALSE;
+         */
 
           $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
         }
@@ -326,20 +329,12 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#type' => 'select',
       '#title' => $this->t('Select filter'),
       '#options' => $manual_select_filter_options,
-      '#empty_value' => '',
+      '#empty_value' => 'empty',
       '#empty_option' => $this->t('- Select a filter -'),
       '#default_value' => '',
       '#weight' => -99,
       '#attributes' => [
         'class' => count($selected_filters_tempstore) > 0 ? ['active'] : [''],
-      ],
-      '#ajax' => [
-        // TODO: use OOP, not static context.
-        'callback' => 'Drupal\flexible_views\Plugin\views\exposed_form\ManualSelection::manualSelectFilterChangeCallback',
-        'event' => 'change',
-        'wrapper' => $form['#id'],
-        'effect' => 'fade',
-        'method' => 'replace',
       ],
     ];
 
@@ -360,202 +355,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     if (count($selected_filters_tempstore) > 0) {
       $this->tempStore->delete($this->setTempStorageId());
     }
-  }
-
-  /**
-   * Ajax callback function for changing active filters.
-   *
-   * @param array $form
-   *   The form array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form_state.
-   *
-   * @return mixed
-   *   The Form render array.
-   *
-   * @todo: Using $this when not in object context...
-   * @see https://www.drupal.org/project/drupal/issues/2842525
-   * @see https://www.drupal.org/docs/8/api/javascript-api/ajax-forms
-   */
-  public function manualSelectFilterChangeCallback(array &$form, FormStateInterface $form_state) {
-    $selected_filter = $form_state->getValue('manual_select_filter');
-
-    // TODO: Somehow we need to re-attach the form library and class?
-    $form['#attached']['library'][] = 'flexible_views/manual_selection';
-    $form['#attributes']['class'][] = 'manual-selection-form';
-
-    // Remove the selected filter from the drop down.
-    $manual_select_options = $form['manual_select_filter']['#options'];
-    unset($manual_select_options[$selected_filter]);
-    $form['manual_select_filter']['#options'] = $manual_select_options;
-
-    // Enable the selected filter.
-    $form[$selected_filter]['#access'] = TRUE;
-    if (isset($form[$selected_filter]['value'])) {
-      $form[$selected_filter]['value']['#access'] = TRUE;
-    }
-
-    // Enable the selected operator.
-    if ($form['#info']['filter-' . $selected_filter]['operator'] !== '' && isset($form[$form['#info']['filter-' . $selected_filter]['operator']])) {
-      $form[$form['#info']['filter-' . $selected_filter]['operator']]['#access'] = TRUE;
-      $form[$form['#info']['filter-' . $selected_filter]['operator']]['#default_value'] = '';
-    }
-
-    // Enable (if available) the min/max filters.
-    if (isset($form[$selected_filter]['min'])) {
-      $form[$selected_filter]['min']['#access'] = TRUE;
-    }
-    if (isset($form[$selected_filter]['max'])) {
-      $form[$selected_filter]['max']['#access'] = TRUE;
-    }
-
-    // TODO: Same as in sortCheckboxes() but we can't call it...
-    // @start $this->sortCheckboxes($form);
-    $checkboxes = array_filter(array_keys($form), function ($element) {
-      return strpos($element, '_check_deactivate');
-    });
-
-    foreach ($checkboxes as $checkbox) {
-      $filter_name = str_replace('_check_deactivate', '', $checkbox);
-
-      if ($form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
-        $weight = $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'];
-      }
-      else {
-        $weight = $form[$filter_name]['#weight'];
-      }
-
-      $form[$checkbox]['#weight'] = floatval($weight) - 0.001;
-    }
-
-    // Sort always visible filters.
-    $filter_always_visible = $form_state->getValue('filter_always_visible');
-    foreach ($filter_always_visible as $filter) {
-      $form[$filter]['#weight'] = $form[$filter]['#weight'] - 100;
-
-      if ($form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
-        $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] - 100;
-      }
-    }
-    // @end $this->sortCheckboxes($form);
-
-    // Enable the checkbox.
-    $form[$selected_filter . '_check_deactivate']['#access'] = TRUE;
-    $form[$selected_filter . '_check_deactivate']['#checked'] = TRUE;
-
-    // TODO: Use service injection & document.
-    // Save the selected filter to the tempstore.
-    $view_executable = $form_state->getStorage()["view"];
-    $temp_storage_id = 'selected_filters_' . $view_executable->id() . '_' . $view_executable->current_display;
-    $tempstore = \Drupal::service('user.private_tempstore')->get('flexible_views');
-
-    $selected_filters = $tempstore->get($temp_storage_id) ? $tempstore->get($temp_storage_id) : [];
-    if (!in_array($selected_filter, $selected_filters)) {
-      $selected_filters[] = $selected_filter;
-      $tempstore->set($temp_storage_id, $selected_filters);
-    }
-
-    return $form;
-  }
-
-  /**
-   * Activate / Deactivate a filter via a checkbox.
-   *
-   * @param array $form
-   *   The form array.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The form state.
-   *
-   * @return array
-   *   The manipulated form array.
-   */
-  public function deactivateFilterCallback(array &$form, FormStateInterface $form_state) {
-    // Get the trigger name (filter) and value.
-    $trigger = $form_state->getTriggeringElement();
-
-    $trigger_name = $trigger['#name'];
-    $trigger_value = $form_state->getUserInput()[$trigger_name];
-
-    $form[$trigger_name]['#suffix'] = $trigger_value ? '' : '</div>';
-    if ($trigger_value) {
-      $form[$trigger_name]['#access'] = TRUE;
-      $form[$trigger_name]['#checked'] = TRUE;
-    }
-
-    // TODO: Somehow we need to re-attach the form library and class?
-    $form['#attached']['library'][] = 'flexible_views/manual_selection';
-    $form['#attributes']['class'][] = 'manual-selection-form';
-
-    $form_element = str_replace('_check_deactivate', '', $trigger_name);
-
-    // Enable / Disable the filter which belongs to the checkbox.
-    $form[$form_element]['#access'] = $trigger_value ? TRUE : FALSE;
-    //$form[$form_element]['#default_value'] = $trigger_value ? '' : FALSE;
-    $form[$form_element]['#suffix'] = $trigger_value ? '</div>' : '';
-
-    if ($form['#info']['filter-' . $form_element]['operator']) {
-      $form[$form['#info']['filter-' . $form_element]['operator']]['#access'] = $trigger_value ? TRUE : FALSE;
-      //$form[$form['#info']['filter-' . $form_element]['operator']]['#default_value'] = $trigger_value ? TRUE : FALSE;
-    }
-
-    // Remove the values from the query if the filter was deactivated.
-    $form_state->unsetValue($form_element);
-    if ($form['#info']['filter-' . $form_element]['operator']) {
-      $form_state->unsetValue($form['#info']['filter-' . $form_element]['operator']);
-    }
-
-    // TODO: Same as in sortCheckboxes() but we can't call it...
-    // @start $this->sortCheckboxes($form);
-    $checkboxes = array_filter(array_keys($form), function ($element) {
-      return strpos($element, '_check_deactivate');
-    });
-
-    foreach ($checkboxes as $checkbox) {
-      $filter_name = str_replace('_check_deactivate', '', $checkbox);
-
-      if ($form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
-        $weight = $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'];
-      }
-      else {
-        $weight = $form[$filter_name]['#weight'];
-      }
-
-      $form[$checkbox]['#weight'] = floatval($weight) - 0.001;
-    }
-
-    // Sort always visible filters.
-    $filter_always_visible = $form_state->getValue('filter_always_visible');
-    foreach ($filter_always_visible as $filter) {
-      $form[$filter]['#weight'] = $form[$filter]['#weight'] - 100;
-
-      if ($form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
-        $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] - 100;
-      }
-    }
-    // @end $this->sortCheckboxes($form);
-
-    // TODO: Use service injection.
-    // Add or remove the filter from the tempstore.
-    // TODO: We can't access this...
-    $view_executable = $form_state->getStorage()["view"];
-    $temp_storage_id = 'selected_filters_' . $view_executable->id() . '_' . $view_executable->current_display;
-    $tempstore = \Drupal::service('user.private_tempstore')->get('flexible_views');
-    $selected_filters = $tempstore->get($temp_storage_id);
-
-    if ($trigger_value) {
-      $selected_filters[] = $form_element;
-      $tempstore->set($temp_storage_id, $selected_filters);
-    }
-    else {
-      if (in_array($form_element, $selected_filters)) {
-        unset($selected_filters[array_search($form_element, $selected_filters)]);
-        $tempstore->set($temp_storage_id, $selected_filters);
-      }
-    }
-
-    $form_state->setRebuild();
-
-    return $form;
   }
 
 }
