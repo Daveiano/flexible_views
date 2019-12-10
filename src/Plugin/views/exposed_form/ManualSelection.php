@@ -189,12 +189,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#maxlength' => 1024,
     ];
 
-    // Show rest button if we have something in the tempstore.
-    // TODO: New logic needed.
-    /*if (count([]) > 0) {
-      $form['actions']['reset']['#access'] = TRUE;
-    }*/
-
     // Remove the column_selector filter from the elements we want to process.
     if ($column_selector_index = array_search('filter-column_selector', $filters)) {
       unset($filters[$column_selector_index]);
@@ -214,8 +208,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           '#title' => $form['#info'][$filter]['label'],
           '#checked' => array_key_exists($filter_name, $query) ? TRUE : FALSE,
           '#prefix' => "<div class='filter-wrap'>",
-          // TODO - Handle via JS ok? We use JS because we cant use a regex to
-          // test something like the input CONTAINS the value "$filter name".
+          // Test something like the input CONTAINS the value "$filter name".
           '#states' => [
             'visible' => [
               ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
@@ -226,7 +219,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         // Hide the labels and hide the filters if the checkbox is set to false.
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
-          // TODO.
           $form[$form['#info'][$filter]['operator']]['#states']['enabled'] = [
             ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
           ];
@@ -246,31 +238,11 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         }
 
         // If there is an min/max operator, hide the label from the min element.
-        // TODO: Add state condition on checkbox for every state for min/max.
         if (isset($form[$filter_name]['min'])) {
           $form[$filter_name]['min']['#title_display'] = 'invisible';
         }
         if (isset($form[$filter_name]['max'])) {
           $form[$filter_name]['max']['#attributes']['class'][] = 'label-before';
-        }
-
-        // Hide the filters if they are not active.
-        // TODO: Negate this if clause, or just remove it.
-        if (!array_key_exists($filter_name, $query) || (array_key_exists($filter_name, $input) && (!array_key_exists($form['#info'][$filter]['operator'], $input) && $form['#info'][$filter]['operator'] !== ""))) {
-          // Exposed filter.
-          /*$form[$filter_name]['#access'] = FALSE;
-
-          // Exposed operator.
-          if ($form['#info'][$filter]['operator'] !== '' && isset($form[$form['#info'][$filter]['operator']])) {
-            $form[$form['#info'][$filter]['operator']]['#access'] = FALSE;
-          }
-
-          // Checkbox.
-          $form[$filter_name . '_check_deactivate']['#checked'] = FALSE;
-          $form[$filter_name . '_check_deactivate']['#access'] = FALSE;
-         */
-
-          // $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
         }
 
         $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
@@ -285,8 +257,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       }
     }
 
-    // TODO: If this is enabled, we getting the bug:
-    // @see https://www.drupal.org/project/drupal/issues/2842525
     if ($this->options['wrap_with_details']) {
       $form['manual_selection_filter_details'] = [
         '#type' => 'details',

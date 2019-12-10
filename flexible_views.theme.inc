@@ -130,8 +130,8 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
   // We need the raw data for this grouping, which is passed in
   // as $variables['rows'].
   // However, the template also needs to use for the rendered fields.  We
-  // therefore swap the raw data out to a new variable and reset $variables['rows']
-  // so that it can get rebuilt.
+  // therefore swap the raw data out to a new variable and reset
+  // $variables['rows'] so that it can get rebuilt.
   // Store rows so that they may be used by further preprocess functions.
   $result = $variables['result'] = $variables['rows'];
   $variables['rows'] = [];

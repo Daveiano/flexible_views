@@ -34,6 +34,7 @@
 
 *[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons > div,
 *#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
+  box-sizing: border-box;
   background-color: white;
   cursor: pointer;
   width: 40px;
@@ -57,5 +58,5 @@
 }
 
 .js-form-item.form-item.form-item-selected-columns-submit-order {
-  display: none !important;
+  display: none;
 }

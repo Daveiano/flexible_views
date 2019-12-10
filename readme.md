@@ -1,27 +1,23 @@
 # Flexible Views
 
-## Installation
+Issue Handling is done on Drupal.org:
+[Drupal Project Page](https://www.drupal.org/project/flexible_views)
 
-### composer.json
+This module adds better usability and some improvements to the Core Views module by providing some new features:
 
-Add this under the repositories key:
+<ul>
+  <li>Views format plugin: Flexible Table</li>
+<li>Exposed Filter: Visible Column Selector</li>
+<li>Exposed form style: Manual selection</li>
+</ul>
 
-```
-{
-    "type": "package",
-    "package": {
-        "name": "efork/flexible_views",
-        "version": "1.0",
-        "type":"drupal-module",
-        "source": {
-            "url": "https://github.com/Daveiano/flexible_views.git",
-            "type": "git",
-            "reference": "8.x-1.x"
-        }
-    }
-}
-```
+With the flexible table and column selector plugins, the users can choose which columns they want to see or to hide. You can define different compositions of columns in a views table layout.
 
-### Command line
+<img src="/files/flexible-views-column-selector_0.png" alt="Flexible Views: Column Selector with Flexible Tables plugin" />
 
-`composer require efork/flexible_views`
+With the Manual Selection exposed filter plugin, the user can choose exposed filters from a select list. This way a view with a lot of exposed filters keeps to be clean and clear. You only choose the filters you need. Additionally, you can define filters which should be always visible:
+
+
+<img src="/files/flexible-views-manual-selection_0.png" alt="Flexible Views: Manual selection plugin" />
+
+<strong>Docs will be available soon!</strong>

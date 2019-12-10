@@ -18,6 +18,9 @@ use Drupal\views\ViewExecutable;
  */
 class ColumnSelector extends FilterPluginBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public $no_operator = TRUE;
 
   /**
@@ -36,6 +39,8 @@ class ColumnSelector extends FilterPluginBase {
 
     $options['wrap_with_details'] = ['default' => TRUE];
     $options['exposed'] = ['default' => TRUE];
+    $options['expose']['contains']['label'] = ['default' => 'Column Options'];
+    $options["expose"]["contains"]["identifier"] = ['default' => 'columns_selector'];
 
     return $options;
   }
