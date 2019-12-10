@@ -3,7 +3,7 @@ column_selector:
     theme:
       css/flexible-views-column-selector.css: {}
   js:
-    js/column-selector.js: {}
+    js/flexible-views-column-selector.js: {}
   dependencies:
     - core/jquery
     - core/drupal

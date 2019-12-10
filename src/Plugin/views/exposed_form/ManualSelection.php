@@ -7,7 +7,6 @@ use Drupal\Core\Utility\TableSort;
 use Drupal\views\Plugin\views\exposed_form\ExposedFormPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
  * Class ManualSelection.
@@ -23,30 +22,13 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
 class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Temporary store to save ajax submitted values.
-   *
-   * @var \Drupal\Core\TempStore\PrivateTempStore
-   */
-  protected $tempStore;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, PrivateTempStoreFactory $temp_store_factory) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-
-    $this->tempStore = $temp_store_factory->get('flexible_views');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition,
-      $container->get('user.private_tempstore')
+      $plugin_definition
     );
   }
 
@@ -173,16 +155,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
   }
 
   /**
-   * Generate the tempStorage ID to use.
-   *
-   * @return string
-   *   The tempStorage ID.
-   */
-  public function setTempStorageId() {
-    return 'selected_filters_' . $this->view->id() . '_' . $this->view->current_display;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function renderExposedForm($block = FALSE) {
@@ -199,6 +171,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
    * {@inheritdoc}
    */
   public function exposedFormAlter(&$form, FormStateInterface $form_state) {
+    parent::exposedFormAlter($form, $form_state);
+
     $form['#attached']['library'][] = 'flexible_views/manual_selection';
     $form['#attributes']['class'][] = 'manual-selection-form';
 
@@ -215,12 +189,11 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#maxlength' => 1024,
     ];
 
-    $selected_filters_tempstore = $this->tempStore->get($this->setTempStorageId()) ? $this->tempStore->get($this->setTempStorageId()) : [];
-
     // Show rest button if we have something in the tempstore.
-    if (count($selected_filters_tempstore) > 0) {
+    // TODO: New logic needed.
+    /*if (count([]) > 0) {
       $form['actions']['reset']['#access'] = TRUE;
-    }
+    }*/
 
     // Remove the column_selector filter from the elements we want to process.
     if ($column_selector_index = array_search('filter-column_selector', $filters)) {
@@ -239,8 +212,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         $form[$filter_name . '_check_deactivate'] = [
           '#type' => 'checkbox',
           '#title' => $form['#info'][$filter]['label'],
-          '#checked' => array_key_exists($filter_name, $query) || in_array($filter_name, $selected_filters_tempstore) ? TRUE : FALSE,
-          #'#access' => array_key_exists($filter_name, $query) || in_array($filter_name, $selected_filters_tempstore) ? TRUE : FALSE,
+          '#checked' => array_key_exists($filter_name, $query) ? TRUE : FALSE,
           '#prefix' => "<div class='filter-wrap'>",
           // TODO - Handle via JS ok? We use JS because we cant use a regex to
           // test something like the input CONTAINS the value "$filter name".
@@ -255,21 +227,21 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
           // TODO.
-          $form[$form['#info'][$filter]['operator']]['#states']['disabled'] = [
-            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
+          $form[$form['#info'][$filter]['operator']]['#states']['enabled'] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
           ];
         }
 
         $form[$filter_name]['#title_display'] = 'invisible';
 
         if (isset($form[$filter_name]['value'])) {
-          $form[$filter_name]['value']['#states']['disabled'][] = [
-            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
+          $form[$filter_name]['value']['#states']['enabled'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
           ];
         }
         else {
-          $form[$filter_name]['#states']['disabled'][] = [
-            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
+          $form[$filter_name]['#states']['enabled'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
           ];
         }
 
@@ -283,7 +255,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         }
 
         // Hide the filters if they are not active.
-        if ((!array_key_exists($filter_name, $query) && !in_array($filter_name, $selected_filters_tempstore)) || (array_key_exists($filter_name, $input) && (!array_key_exists($form['#info'][$filter]['operator'], $input) && $form['#info'][$filter]['operator'] !== ""))) {
+        // TODO: Negate this if clause, or just remove it.
+        if (!array_key_exists($filter_name, $query) || (array_key_exists($filter_name, $input) && (!array_key_exists($form['#info'][$filter]['operator'], $input) && $form['#info'][$filter]['operator'] !== ""))) {
           // Exposed filter.
           /*$form[$filter_name]['#access'] = FALSE;
 
@@ -297,8 +270,10 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           $form[$filter_name . '_check_deactivate']['#access'] = FALSE;
          */
 
-          $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
+          // $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
         }
+
+        $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
 
         if ($this->options['wrap_with_details']) {
           $form['manual_selection_filter_details'][$filter_name] = $form[$filter_name];
@@ -333,27 +308,11 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#empty_option' => $this->t('- Select a filter -'),
       '#default_value' => '',
       '#weight' => -99,
-      '#attributes' => [
-        'class' => count($selected_filters_tempstore) > 0 ? ['active'] : [''],
-      ],
     ];
 
     if ($this->options['wrap_with_details']) {
       $form['manual_selection_filter_details']['manual_select_filter'] = $form['manual_select_filter'];
       unset($form['manual_select_filter']);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function resetForm(&$form, FormStateInterface $form_state) {
-    parent::resetForm($form, $form_state);
-
-    $selected_filters_tempstore = $this->tempStore->get($this->setTempStorageId());
-
-    if (count($selected_filters_tempstore) > 0) {
-      $this->tempStore->delete($this->setTempStorageId());
     }
   }
 

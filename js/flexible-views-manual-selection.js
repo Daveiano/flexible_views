@@ -7,6 +7,21 @@
 
   'use strict';
 
+  var initialized;
+
+  function init() {
+    if (!initialized) {
+      initialized = true;
+
+      // Set the enabled filters on page load to disabled in the filter select.
+      var selectedFilters = $('input[name="selected_filters"]').val().split(',');
+
+      for (var i = 0; i < selectedFilters.length; i++) {
+        $("select[name='manual_select_filter']").find('option[value="' + selectedFilters[i] + '"]').prop("disabled", true);
+      }
+    }
+  }
+
   /**
    * Helper fn to populate the hidden field which stores the active filters.
    *
@@ -33,45 +48,54 @@
     $element.trigger('change');
   };
 
-  Drupal.behaviors.flexible_views_column_selector.attach = function (context, settings) {
+  /**
+   * Activate the given filters.
+   *
+   * @param {string} selectedFilters - Comma seperated string of filter names.
+   */
+  var activateFilters = function (selectedFilters) {
+    for (var i = 0; i < selectedFilters.length; i++) {
+      $('input[name="' + selectedFilters[i] + '_check_deactivate"]').prop('checked', true).trigger('change');
+    }
+  };
 
-    // Write the selected filters from the select element to a hidden field.
-    $("select[name='manual_select_filter']").once().change(function () {
-      // Copy the selected value to the hidden field.
-      var $selectedFilters = $('input[name="selected_filters"]');
+  Drupal.behaviors.flexible_views_manual_selection = {
+    attach: function (context, settings) {
+      init();
 
-      populateHiddenField('add', $selectedFilters.val(), $selectedFilters, $(this).val());
+      // Write the selected filters from the select element to a hidden field.
+      $("select[name='manual_select_filter']").once().change(function () {
+        // Copy the selected value to the hidden field.
+        var $selectedFilters = $('input[name="selected_filters"]');
+        populateHiddenField('add', $selectedFilters.val(), $selectedFilters, $(this).val());
 
-      // Disable the chosen option.
-      $(this).find('option[value="' + $(this).val() + '"]').prop("disabled", true);
+        // Disable the chosen option.
+        $(this).find('option[value="' + $(this).val() + '"]').prop("disabled", true);
 
-      // Set the select element back to the default value.
-      $(this).val('empty');
-    });
-
-    // Activate the filters.
-    $('input[name="selected_filters"]').once().change(function () {
-      var selectedFilters = $(this).val().split(',');
-
-      for (var i = 0; i < selectedFilters.length; i++) {
-        $('input[name="' + selectedFilters[i] + '_check_deactivate"]').prop('checked', true).trigger('change');
-      }
-    });
-
-    // Deactivate the filters.
-    $('input[name$="_check_deactivate"]').each(function () {
-      $(this).once().change(function () {
-        if (!$(this).prop(':checked')) {
-          var $selectedFilters = $('input[name="selected_filters"]'),
-            valueToRemove = $(this).attr('name').replace('_check_deactivate', '');
-
-          populateHiddenField('remove', $selectedFilters.val(), $selectedFilters, valueToRemove);
-
-          $("select[name='manual_select_filter']").find('option[value="' + valueToRemove + '"]').prop("disabled", false);
-        }
+        // Set the select element back to the default value.
+        $(this).val('empty');
       });
-    });
 
-  }
+      // Activate the filters.
+      $('input[name="selected_filters"]').once().change(function () {
+        var selectedFilters = $(this).val().split(',');
 
+        activateFilters(selectedFilters);
+      });
+
+      // Deactivate the filters.
+      $('input[name$="_check_deactivate"]').each(function () {
+        $(this).once().change(function () {
+          if (!this.checked) {
+            var $selectedFilters = $('input[name="selected_filters"]'),
+              valueToRemove = $(this).attr('name').replace('_check_deactivate', '');
+
+            populateHiddenField('remove', $selectedFilters.val(), $selectedFilters, valueToRemove);
+
+            $("select[name='manual_select_filter']").find('option[value="' + valueToRemove + '"]').prop("disabled", false);
+          }
+        });
+      });
+    }
+  };
 })(jQuery, Drupal);
