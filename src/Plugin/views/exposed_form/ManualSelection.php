@@ -216,6 +216,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           ],
         ];
 
+        // TODO: Outsource this code in fn.
         // Hide the labels and hide the filters if the checkbox is set to false.
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
@@ -240,20 +241,49 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         // If there is an min/max operator, hide the label from the min element.
         if (isset($form[$filter_name]['min'])) {
           $form[$filter_name]['min']['#title_display'] = 'invisible';
+          $form[$filter_name]['min']['#states']['enabled'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
+          ];
         }
         if (isset($form[$filter_name]['max'])) {
           $form[$filter_name]['max']['#attributes']['class'][] = 'label-before';
+          $form[$filter_name]['max']['#states']['enabled'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
+          ];
         }
 
         $manual_select_filter_options[$filter_name] = $form['#info'][$filter]['label'];
 
+        // TODO check if need to rewrite the states.
         if ($this->options['wrap_with_details']) {
+          $form['manual_selection_filter_details'][$filter_name . '_check_deactivate'] = $form[$filter_name . '_check_deactivate'];
+          unset($form[$filter_name . '_check_deactivate']);
+
           $form['manual_selection_filter_details'][$filter_name] = $form[$filter_name];
           unset($form[$filter_name]);
 
           $form['manual_selection_filter_details'][$form['#info'][$filter]['operator']] = $form[$form['#info'][$filter]['operator']];
           unset($form[$form['#info'][$filter]['operator']]);
         }
+      }
+      else {
+        // TODO: Check for wrap_with_details.
+        // Wrap the always visible filters with a wrap.
+        if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
+          $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
+          $form[$form['#info'][$filter]['operator']]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
+        }
+        else {
+          $form[$filter_name]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
+        }
+
+        // Label handling.
+        if (isset($form[$filter_name]['min'])) {
+          $form[$filter_name]['min']['#title_display'] = 'invisible';
+        }
+        $form[$filter_name]['#title_display'] = 'invisible';
+
+        $form[$filter_name]['#suffix'] = '</div>';
       }
     }
 
@@ -265,6 +295,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         '#weight' => -200,
         '#attributes' => [
           'style' => 'float: none;clear: both;',
+          'class' => ['flexible-views-manual-selection-details'],
         ],
       ];
     }

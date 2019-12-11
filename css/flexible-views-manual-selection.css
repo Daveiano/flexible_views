@@ -17,6 +17,21 @@ form.manual-selection-form .filter-wrap .form-item {
   margin: 0 1.5rem 0 0;
 }
 
+form.manual-selection-form .filter-wrap .form-item input,
+form.manual-selection-form .filter-wrap .form-item select {
+  width: 100%;
+}
+
+form.manual-selection-form .filter-wrap .form-item.form-disabled {
+  display: none;
+}
+
+form.manual-selection-form .filter-wrap.always-visible span.label {
+  width: 20%;
+  margin: 0 1.5rem 0 0;
+  padding-bottom: 15px;
+}
+
 form.manual-selection-form .filter-wrap .form-item[class*="-check-deactivate"] {
   padding-bottom: 15px;
 }
@@ -49,4 +64,9 @@ form.manual-selection-form .filter-wrap:after {
 form.manual-selection-form .filter-wrap input[disabled],
 form.manual-selection-form .filter-wrap select[disabled] {
   display: none;
+}
+
+
+.form--inline .flexible-views-manual-selection-details .form-item {
+  float: none;
 }
