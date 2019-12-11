@@ -73,7 +73,7 @@
         $(this).find('option[value="' + $(this).val() + '"]').prop("disabled", true);
 
         // Set the select element back to the default value.
-        $(this).val('empty');
+        $(this).val('');
       });
 
       // Activate the filters.

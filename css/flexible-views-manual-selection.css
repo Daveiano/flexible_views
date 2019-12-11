@@ -17,7 +17,7 @@ form.manual-selection-form .filter-wrap .form-item {
   margin: 0 1.5rem 0 0;
 }
 
-form.manual-selection-form .filter-wrap .form-item input,
+form.manual-selection-form .filter-wrap .form-item input[type="text"],
 form.manual-selection-form .filter-wrap .form-item select {
   width: 100%;
 }
