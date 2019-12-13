@@ -215,6 +215,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       if (!in_array($filter_name, $filter_always_visible, TRUE)) {
         // Wrap each pair of filters with html div.
         $form[$filter_name]['#suffix'] = '</div>';
+        $form[$filter_name]['#chosen'] = FALSE;
 
         // Add checkboxes to deactivate filter.
         $form[$filter_name . '_check_deactivate'] = [
@@ -236,6 +237,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           $form[$form['#info'][$filter]['operator']]['#states']['enabled'] = [
             ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
           ];
+          $form[$form['#info'][$filter]['operator']]['#chosen'] = FALSE;
         }
 
         $form[$filter_name]['#title_display'] = 'invisible';
@@ -310,6 +312,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#empty_option' => $this->t('- Select a filter -'),
       '#default_value' => '',
       '#weight' => -99,
+      '#chosen' => FALSE,
     ];
 
     if ($this->options['wrap_with_details']) {
