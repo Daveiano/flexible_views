@@ -96,7 +96,9 @@ class ColumnSelector extends FilterPluginBase {
     $query_mapped = [];
 
     foreach ($query as $field_name) {
-      $query_mapped[$field_name] = $fields[$field_name]->options['label'];
+      if (isset($fields[$field_name])) {
+        $query_mapped[$field_name] = $fields[$field_name]->options['label'];
+      }
     }
 
     return $query_mapped;
@@ -296,7 +298,10 @@ EOT;
 
       $session = &$_SESSION['views'][$this->view->storage->id()][$display_id];
 
-      $session[$this->options['expose']['identifier']] = $input[$this->options['expose']['identifier']];
+      if (isset($input[$this->options['expose']['identifier']])) {
+        $session[$this->options['expose']['identifier']] = $input[$this->options['expose']['identifier']];
+      }
+
       $session['selected_columns_submit_order'] = $input['selected_columns_submit_order'];
     }
   }

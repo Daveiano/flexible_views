@@ -1,0 +1,7 @@
+views.filter.column_selector:
+  type: views_filter
+  label: 'Column Options'
+  mapping:
+    wrap_with_details:
+      type: boolean
+      label: 'Wrap with details element'

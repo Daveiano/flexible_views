@@ -1,0 +1,8 @@
+name: 'Flexible views test views'
+type: module
+description: 'Provides default views for flexible views tests.'
+package: Testing
+version: VERSION
+core: 8.x
+dependencies:
+  - flexible_views:flexible_views

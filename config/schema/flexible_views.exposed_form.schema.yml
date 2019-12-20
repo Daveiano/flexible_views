@@ -1,0 +1,23 @@
+views.exposed_form.manual_selection:
+  type: views_exposed_form
+  label: 'Manual Selection'
+  mapping:
+    wrap_with_details:
+      type: boolean
+      label: 'Wrap with details element'
+    details_label:
+      type: text
+      label: 'Details wrapper label'
+    filter_always_visible:
+      type: sequence
+      label: 'Select the filters which should be always visible'
+      sequence:
+        type: mapping
+        label: 'Selected filters.'
+        mapping:
+          value:
+            type: boolean
+            label: 'Value'
+          label:
+            type: label
+            label: 'Label'

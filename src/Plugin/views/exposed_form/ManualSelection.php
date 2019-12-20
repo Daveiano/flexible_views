@@ -116,6 +116,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
   /**
    * Sorts checkboxes and always visible filters for each exposed filter.
    *
+   * @todo Add Unit test.
+   *
    * @param array $form
    *   The form array.
    * @param array $filter_always_visible
@@ -143,7 +145,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     }
 
     // Sort always visible filters.
-    foreach (array_filter($filter_always_visible) as $filter) {
+    foreach (array_keys(array_filter($filter_always_visible)) as $filter) {
       $form[$filter]['#weight'] = $form[$filter]['#weight'] - 100;
 
       if ($form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
@@ -161,7 +163,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     $form = parent::renderExposedForm($block);
 
     // Set the correct weight for the deactivate_checkboxes.
-    $filter_always_visible = $this->options['filter_always_visible'] ? $this->options['filter_always_visible'] : [];
+    $filter_always_visible = isset($this->options['filter_always_visible']) ? $this->options['filter_always_visible'] : [];
     $form = self::sortCheckboxes($form, $filter_always_visible);
 
     return $form;
@@ -178,8 +180,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
 
     $filters = array_keys($form['#info']);
     $query = TableSort::getQueryParameters(\Drupal::request());
-    $input = $form_state->getUserInput();
-    $filter_always_visible = array_filter($this->options['filter_always_visible']);
+    $filter_always_visible = isset($this->options['filter_always_visible']) ? array_filter($this->options['filter_always_visible']) : [];
     $manual_select_filter_options = [];
 
     // We add a hidden field to the form to store the selected filters.
