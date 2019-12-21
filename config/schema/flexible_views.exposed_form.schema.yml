@@ -12,12 +12,5 @@ views.exposed_form.manual_selection:
       type: sequence
       label: 'Select the filters which should be always visible'
       sequence:
-        type: mapping
-        label: 'Selected filters.'
-        mapping:
-          value:
-            type: boolean
-            label: 'Value'
-          label:
-            type: label
-            label: 'Label'
+        type: string
+        label: 'Selected filter.'

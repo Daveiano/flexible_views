@@ -2,8 +2,6 @@
 
 namespace Drupal\Tests\flexible_views\Functional;
 
-use Drupal\Core\Url;
-use Drupal\Tests\BrowserTestBase;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\Tests\views\Functional\ViewTestBase;
 
@@ -32,13 +30,6 @@ class FlexibleViewsTest extends ViewTestBase {
    * @var string
    */
   protected $defaultTheme = 'stark';
-
-  /**
-   * A user with permission to administer site configuration.
-   *
-   * @var \Drupal\user\UserInterface
-   */
-  //protected $user;
 
   /**
    * {@inheritdoc}
@@ -165,7 +156,7 @@ class FlexibleViewsTest extends ViewTestBase {
     // Load the linked page display.
     $this->drupalGet('admin/test-flexible-views');
 
-    // Verify that the page contains generated content.
+    // Verify that the page contains the column options content.
     $this->assertSession()->pageTextContains(t('Column Options'));
 
     // Check the available select.
@@ -195,6 +186,42 @@ class FlexibleViewsTest extends ViewTestBase {
     $this->assertSession()->elementExists('xpath', "//div[@class='form-item move-buttons']/div[@class='move-left']");
     $this->assertSession()->elementExists('xpath', "//div[@class='form-item move-buttons']/div[@class='move-top']");
     $this->assertSession()->elementExists('xpath', "//div[@class='form-item move-buttons']/div[@class='move-down']");
+  }
+
+  /**
+   * Check the initial display and presence of needed elements.
+   *
+   * @throws \Behat\Mink\Exception\ElementNotFoundException
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   */
+  public function testManualSelection() {
+    // Load the linked page display.
+    $this->drupalGet('admin/test-flexible-views');
+
+    // Verify that the page contains the select filter element.
+    $this->assertSession()->pageTextContains(t('- Select a filter -'));
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']");
+
+    // Verify that the select contains the right options.
+    $manual_select_options = $this->xpath("//select[@id='edit-manual-select-filter']/option");
+    $this->assertEqual(count($manual_select_options), 3, 'Correct manual select options count.');
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='body_value']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='type_1']");
+
+    // Check that the title filter is present.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap always-visible']/span[@class='label']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap always-visible']//select[@id='edit-title-op']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap always-visible']//input[@id='edit-title']");
+
+    // Check that the body filter is present.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-body-value-op']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value']");
+
+    // Check that the type_1 filter is present.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-type-1-check-deactivate']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-type-1-op']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-type-1']");
   }
 
 }

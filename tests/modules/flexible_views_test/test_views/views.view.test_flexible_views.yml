@@ -1,4 +1,4 @@
-uuid: ea362f53-acf5-4810-a383-4d51302b31d3
+uuid: 50013883-8a5b-4b70-8cff-bca31f5ca25d
 langcode: en
 status: true
 dependencies:
@@ -40,7 +40,7 @@ display:
           query_comment: ''
           query_tags: {  }
       exposed_form:
-        type: basic
+        type: manual_selection
         options:
           submit_button: Apply
           reset_button: false
@@ -49,6 +49,12 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
+          wrap_with_details: false
+          details_label: Filter
+          filter_always_visible:
+            title: title
+            type_1: '0'
+            body_value: '0'
       pager:
         type: mini
         options:
@@ -80,18 +86,10 @@ display:
           description: ''
           columns:
             title: title
-            type: type
             body: body
+            type: type
           info:
             title:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-              default_visible: true
-            type:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -107,6 +105,14 @@ display:
               empty_column: false
               responsive: ''
               default_visible: false
+            type:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+              default_visible: true
           default: title
           empty_table: false
       row:
@@ -168,7 +174,7 @@ display:
           click_sort_column: value
           type: string
           settings:
-            link_to_entity: false
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -311,6 +317,32 @@ display:
           field_api_classes: false
           plugin_id: field
       filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          value:
+            flexible_views_test: flexible_views_test
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+          group: 1
         title:
           id: title
           table: node_field_data
@@ -354,74 +386,6 @@ display:
             group_items: {  }
           entity_type: node
           entity_field: title
-          plugin_id: string
-        status:
-          value: '1'
-          table: node_field_data
-          field: status
-          plugin_id: boolean
-          entity_type: node
-          entity_field: status
-          id: status
-          expose:
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          group: 1
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          value:
-            flexible_views_test: flexible_views_test
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-          expose:
-            operator_limit_selection: false
-            operator_list: {  }
-          group: 1
-        body_value:
-          id: body_value
-          table: node__body
-          field: body_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: body_value_op
-            label: 'Body (body)'
-            description: ''
-            use_operator: true
-            operator: body_value_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: body_value
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              replicator: '0'
-              administrator: '0'
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
           plugin_id: string
         type_1:
           id: type_1
@@ -467,6 +431,48 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+        body_value:
+          id: body_value
+          table: node__body
+          field: body_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: body_value_op
+            label: 'Body (body)'
+            description: ''
+            use_operator: true
+            operator: body_value_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: body_value
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              replicator: '0'
+              administrator: '0'
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: string
         column_selector:
           id: column_selector
           table: views
@@ -509,21 +515,7 @@ display:
             group_items: {  }
           wrap_with_details: true
           plugin_id: column_selector
-      sorts:
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          order: ASC
-          entity_type: node
-          entity_field: title
-          plugin_id: standard
-          relationship: none
-          group_type: group
-          admin_label: ''
-          exposed: false
-          expose:
-            label: ''
+      sorts: {  }
       header: {  }
       footer: {  }
       empty: {  }
