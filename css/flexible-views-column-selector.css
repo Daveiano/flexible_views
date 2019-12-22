@@ -1,30 +1,25 @@
 /* Basic form item styling */
 /* *-Selector is because it can be an details or an div */
-*[id^=edit-flexible-tables-fieldset] {
+#edit-flexible-tables-fieldset {
   width: 100%;
 }
 
-*[id^=edit-flexible-tables-fieldset] .details-wrapper,
-*#edit-flexible-tables-fieldset .details-wrapper {
+#edit-flexible-tables-fieldset .details-wrapper {
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
 
-*[id^=edit-flexible-tables-fieldset] .details-wrapper.fake-detail,
-*#edit-flexible-tables-fieldset .details-wrapper.fake-detail {
+#edit-flexible-tables-fieldset .details-wrapper.fake-detail {
   justify-content: flex-end;
 }
 
-
-*[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item,
-*#edit-flexible-tables-fieldset .details-wrapper .form-item {
+#edit-flexible-tables-fieldset .details-wrapper .form-item {
   float: none;
   margin-right: 0;
 }
 
-*[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons,
-*#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons {
+#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons {
   margin: 0 15px -1.75em 15px;
   height: 200px;
   display: flex;
@@ -32,8 +27,7 @@
   justify-content: space-between;
 }
 
-*[id^=edit-flexible-tables-fieldset] .details-wrapper .form-item.move-buttons > div,
-*#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
+#edit-flexible-tables-fieldset .details-wrapper .form-item.move-buttons > div {
   box-sizing: border-box;
   background-color: white;
   cursor: pointer;
@@ -46,14 +40,12 @@
   align-items: center;
 }
 
-*[id^=edit-flexible-tables-fieldset] select,
-*#edit-flexible-tables-fieldset select {
+#edit-flexible-tables-fieldset select {
   height: 200px;
 }
 
 /* Select logic */
-*[id^=edit-flexible-tables-fieldset] option:disabled,
-*#edit-flexible-tables-fieldset option:disabled {
+#edit-flexible-tables-fieldset option:disabled {
   display: none;
 }
 

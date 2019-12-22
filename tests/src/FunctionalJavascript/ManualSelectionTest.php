@@ -2,13 +2,11 @@
 
 namespace Drupal\Tests\flexible_views\FunctionalJavascript;
 
-use Drupal\field\Entity\FieldConfig;
 use Drupal\FunctionalJavascriptTests\WebDriverTestBase;
-use Drupal\node\Entity\NodeType;
 use Drupal\views\Tests\ViewTestData;
 
 /**
- * Tests the grouped exposed filter admin UI.
+ * Tests the manual_selection exposed form.
  *
  * @group views
  */
@@ -178,16 +176,7 @@ class ManualSelectionTest extends WebDriverTestBase {
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
   public function testManualSelectionFilterRemove() {
-    // Load the linked page display.
-    $this->drupalGet('admin/test-flexible-views');
-
-    // Add a a filter.
-    $manual_select = $this->xpath("//select[@id='edit-manual-select-filter']");
-    $manual_select[0]->selectOption('body_value');
-    $manual_select[0]->blur();
-
-    // Check that the filter was added.
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']")->isVisible();
+    $this->testManualSelectionFilterAdd();
 
     // Uncheck the deactivate checkbox.
     $deactivate_checkbox = $this->xpath("//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']");
