@@ -231,7 +231,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           ],
         ];
 
-        // TODO: Outsource this code in fn.
         // Hide the labels and hide the filters if the checkbox is set to false.
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
@@ -284,7 +283,6 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         }
       }
       else {
-        // TODO: Check for wrap_with_details.
         // Wrap the always visible filters with a wrap.
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
