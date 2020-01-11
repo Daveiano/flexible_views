@@ -179,6 +179,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     $form['#attributes']['class'][] = 'manual-selection-form';
 
     $filters = array_keys($form['#info']);
+    // TODO: Dependency injection.
     $query = TableSort::getQueryParameters(\Drupal::request());
     $filter_always_visible = isset($this->options['filter_always_visible']) ? array_filter($this->options['filter_always_visible']) : [];
     $manual_select_filter_options = [];
@@ -191,8 +192,14 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     ];
 
     // Remove the column_selector filter from the elements we want to process.
+    // Unset the column selector if it is in the filters array.
     if ($column_selector_index = array_search('filter-column_selector', $filters)) {
       unset($filters[$column_selector_index]);
+    }
+    // The above query does not trigger if the column selector filter is
+    // the first filter in the array (or if it is the only exposed filter).
+    elseif ($filters[0] === 'filter-column_selector') {
+      unset($filters[0]);
     }
 
     // Add the details element if the wrap_with_details option is enabled.
@@ -313,6 +320,11 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#weight' => -99,
       '#chosen' => FALSE,
     ];
+
+    if (count($manual_select_filter_options) === 0) {
+      $form['manual_select_filter']['#prefix'] = '<div class="hidden">';
+      $form['manual_select_filter']['#suffix'] = '</div>';
+    }
 
     if ($this->options['wrap_with_details']) {
       $form['manual_selection_filter_details']['manual_select_filter'] = $form['manual_select_filter'];
