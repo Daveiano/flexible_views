@@ -168,6 +168,7 @@ class ColumnSelector extends FilterPluginBase {
         'id' => 'flexible-table-available-columns',
       ],
       '#prefix' => $this->options['wrap_with_details'] ? '' : '<div class="details-wrapper fake-detail">',
+      '#chosen' => FALSE,
     ];
 
     $move_left_right_buttons = <<<EOT
@@ -188,6 +189,7 @@ EOT;
       '#attributes' => [
         'id' => 'flexible-table-selected-columns',
       ],
+      '#chosen' => FALSE,
     ];
 
     $move_top_down_buttons = <<<EOT

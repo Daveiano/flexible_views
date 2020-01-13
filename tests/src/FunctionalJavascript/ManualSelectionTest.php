@@ -33,7 +33,10 @@ class ManualSelectionTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $testViews = ['test_flexible_views'];
+  public static $testViews = [
+    'test_flexible_views',
+    'test_flexible_views_without_exposed',
+  ];
 
   /**
    * {@inheritdoc}
@@ -194,6 +197,23 @@ class ManualSelectionTest extends WebDriverTestBase {
     $this->assertFalse(
       $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value']")->isVisible(),
       'Body filter value is invisble'
+    );
+  }
+
+  /**
+   * Tests that the manual_selection is not shown if a view has nothing exposed.
+   */
+  public function testViewWithoutExposedFilters() {
+    // Load the linked page display.
+    $this->drupalGet('admin/test-flexible-views-2');
+
+    // Check that the select exists.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//select[@id='edit-manual-select-filter']");
+
+    // Check that the select is not visible.
+    $this->assertFalse(
+      $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//select[@id='edit-manual-select-filter']")->isVisible(),
+      'Manual select is visible.'
     );
   }
 
