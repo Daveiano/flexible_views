@@ -55,7 +55,11 @@
    */
   var activateFilters = function (selectedFilters) {
     for (var i = 0; i < selectedFilters.length; i++) {
-      $('input[name="' + selectedFilters[i] + '_check_deactivate"]').prop('checked', true).trigger('change');
+      var $selectedFilterCheckbox = $('input[name="' + selectedFilters[i] + '_check_deactivate"]');
+      $selectedFilterCheckbox.prop('checked', true).trigger('change');
+
+      // Add active class to filter-wrap.
+      $selectedFilterCheckbox.parents('.filter-wrap').addClass('active');
     }
   };
 
@@ -89,6 +93,9 @@
           if (!this.checked) {
             var $selectedFilters = $('input[name="selected_filters"]'),
               valueToRemove = $(this).attr('name').replace('_check_deactivate', '');
+
+            // Remove active class from wrapper element.
+            $(this).parents('.filter-wrap').removeClass('active');
 
             populateHiddenField('remove', $selectedFilters.val(), $selectedFilters, valueToRemove);
 

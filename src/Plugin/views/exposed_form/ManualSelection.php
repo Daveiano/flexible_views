@@ -294,6 +294,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
           $form[$form['#info'][$filter]['operator']]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
+          // Disable chosen.
+          $form[$form['#info'][$filter]['operator']]['#chosen'] = FALSE;
         }
         else {
           $form[$filter_name]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
@@ -305,6 +307,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         }
         $form[$filter_name]['#title_display'] = 'invisible';
 
+        // Disable chosen.
+        $form[$filter_name]['#chosen'] = FALSE;
         $form[$filter_name]['#suffix'] = '</div>';
       }
     }

@@ -3,13 +3,17 @@ form.manual-selection-form .filter-wrap {
   clear: both;
   width: 60%;
   display: flex;
-  align-items: baseline;
+  align-items: center;
 }
 
 /* @see https://stackoverflow.com/a/41625751/1551356 */
 form.manual-selection-form .filter-wrap:first-child,
 :not(.filter-wrap) + .filter-wrap {
   padding-top: 25px;
+}
+
+form.manual-selection-form .filter-wrap.active {
+  padding-bottom: 15px;
 }
 
 form.manual-selection-form .filter-wrap .form-item {
@@ -29,11 +33,6 @@ form.manual-selection-form .filter-wrap .form-item.form-disabled {
 form.manual-selection-form .filter-wrap.always-visible .label {
   width: 20%;
   margin: 0 1.5rem 0 0;
-  padding-bottom: 15px;
-}
-
-form.manual-selection-form .filter-wrap .form-item[class*="-check-deactivate"] {
-  padding-bottom: 15px;
 }
 
 form.manual-selection-form .filter-wrap .form-item[class$="-max"] {
