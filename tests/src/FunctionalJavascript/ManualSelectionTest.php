@@ -168,9 +168,9 @@ class ManualSelectionTest extends WebDriverTestBase {
     $manual_select[0]->selectOption('body_value');
     $manual_select[0]->blur();
 
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']")->isVisible();
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-body-value-op']")->isVisible();
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value']")->isVisible();
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//input[@id='edit-body-value-check-deactivate']")->isVisible();
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//select[@id='edit-body-value-op']")->isVisible();
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//input[@id='edit-body-value']")->isVisible();
   }
 
   /**
