@@ -230,7 +230,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           '#type' => 'checkbox',
           '#title' => $form['#info'][$filter]['label'],
           '#checked' => array_key_exists($filter_name, $query) ? TRUE : FALSE,
-          '#prefix' => "<div class='filter-wrap'>",
+          '#prefix' => array_key_exists($filter_name, $query) ? "<div class='filter-wrap active'>" : "<div class='filter-wrap'>",
           '#states' => [
             'visible' => [
               ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],

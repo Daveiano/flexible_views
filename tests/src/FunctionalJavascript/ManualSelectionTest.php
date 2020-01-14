@@ -174,6 +174,38 @@ class ManualSelectionTest extends WebDriverTestBase {
   }
 
   /**
+   * Checks visibility of used filters after submit.
+   *
+   * @throws \Behat\Mink\Exception\ElementNotFoundException
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   */
+  public function testFilterVisibilityAfterSubmit() {
+    $this->testManualSelectionFilterAdd();
+
+    // Set body filter op to contains.
+    $body_filter_op = $this->xpath("//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//select[@id='edit-body-value-op']");
+    $body_filter_op[0]->selectOption('contains');
+    $body_filter_op[0]->blur();
+
+    // Set body filter value.
+    $body_filter = $this->xpath("//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//input[@id='edit-body-value']");
+    $body_filter[0]->setValue("Body 2");
+    $body_filter[0]->blur();
+
+    // Submit form.
+    $this->submitForm([], 'Apply');
+
+    // Check that the body filter is still visible.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//input[@id='edit-body-value-check-deactivate']")->isVisible();
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//select[@id='edit-body-value-op']")->isVisible();
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//input[@id='edit-body-value']")->isVisible();
+
+    // Check the result.
+    $this->assertSession()->pageTextNotContains(t('Node Content 4'));
+    $this->assertSession()->pageTextContains(t('Node Content 2'));
+  }
+
+  /**
    * Tests removing a filter.
    *
    * @throws \Behat\Mink\Exception\ElementNotFoundException

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\flexible_views\Functional;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\Tests\views\Functional\ViewTestBase;
 
@@ -149,8 +150,6 @@ class FlexibleViewsTest extends ViewTestBase {
   /**
    * Check that the column_selector is present.
    *
-   * @todo: Test form submit (via paramaters).
-   *
    * @throws \Behat\Mink\Exception\ResponseTextException
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
@@ -191,9 +190,28 @@ class FlexibleViewsTest extends ViewTestBase {
   }
 
   /**
-   * Check the initial display and presence of needed elements.
+   * Tests column selector form submit via parameters.
    *
-   * @todo: Test form submit (via paramaters).
+   * @throws \Behat\Mink\Exception\ResponseTextException
+   */
+  public function testColumnSelectorFormSubmit() {
+    // Load the linked page display.
+    $this->drupalGet('admin/test-flexible-views');
+
+    $this->assertSession()->pageTextContains(t('Node Content 4'));
+    $this->assertSession()->pageTextNotContains(t('Node Content Body 4'));
+
+    // Submit the form (add the body column to the selected columns).
+    $this->submitForm([
+      "selected_columns_submit_order" => Json::encode(["body", "type"]),
+    ], 'Apply');
+
+    $this->assertSession()->pageTextNotContains(t('Node Content 4'));
+    $this->assertSession()->pageTextContains(t('Node Content Body 4'));
+  }
+
+  /**
+   * Check the initial display and presence of needed elements.
    *
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    * @throws \Behat\Mink\Exception\ResponseTextException

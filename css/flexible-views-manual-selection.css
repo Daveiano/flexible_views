@@ -12,7 +12,8 @@ form.manual-selection-form .filter-wrap:first-child,
   padding-top: 25px;
 }
 
-form.manual-selection-form .filter-wrap.active {
+form.manual-selection-form .filter-wrap.active,
+form.manual-selection-form .filter-wrap.always-visible {
   padding-bottom: 15px;
 }
 
