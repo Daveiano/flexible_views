@@ -182,7 +182,7 @@ class ManualSelectionTest extends WebDriverTestBase {
     $this->testManualSelectionFilterAdd();
 
     // Uncheck the deactivate checkbox.
-    $deactivate_checkbox = $this->xpath("//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']");
+    $deactivate_checkbox = $this->xpath("//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap active']//input[@id='edit-body-value-check-deactivate']");
     $deactivate_checkbox[0]->uncheck();
 
     // Check that the body filter is invisible again.
@@ -215,6 +215,10 @@ class ManualSelectionTest extends WebDriverTestBase {
       $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//select[@id='edit-manual-select-filter']")->isVisible(),
       'Manual select is visible.'
     );
+
+    // Check select options count.
+    $manual_select_options = $this->xpath("//select[@id='edit-manual-select-filter']/option");
+    $this->assertEqual(count($manual_select_options), 1, 'Correct manual select options count.');
   }
 
 }

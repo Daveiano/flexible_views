@@ -149,6 +149,8 @@ class FlexibleViewsTest extends ViewTestBase {
   /**
    * Check that the column_selector is present.
    *
+   * @todo: Test form submit (via paramaters).
+   *
    * @throws \Behat\Mink\Exception\ResponseTextException
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    */
@@ -190,6 +192,8 @@ class FlexibleViewsTest extends ViewTestBase {
 
   /**
    * Check the initial display and presence of needed elements.
+   *
+   * @todo: Test form submit (via paramaters).
    *
    * @throws \Behat\Mink\Exception\ElementNotFoundException
    * @throws \Behat\Mink\Exception\ResponseTextException
