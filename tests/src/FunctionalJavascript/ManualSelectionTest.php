@@ -218,7 +218,7 @@ class ManualSelectionTest extends WebDriverTestBase {
 
     // Check select options count.
     $manual_select_options = $this->xpath("//select[@id='edit-manual-select-filter']/option");
-    $this->assertEqual(count($manual_select_options), 1, 'Correct manual select options count.');
+    $this->assertEqual(count($manual_select_options), 1, 'Incorrect manual select options count.');
   }
 
 }
