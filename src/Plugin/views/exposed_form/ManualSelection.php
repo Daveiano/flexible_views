@@ -134,7 +134,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     foreach ($checkboxes as $checkbox) {
       $filter_name = str_replace('_check_deactivate', '', $checkbox);
 
-      if ($form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
+      if (isset($form['#info']['filter-' . $filter_name]['operator']) &&$form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
         $weight = $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'];
       }
       else {
@@ -239,7 +239,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         ];
 
         // Hide the labels and hide the filters if the checkbox is set to false.
-        if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
+        if (isset($form['#info'][$filter]['operator']) && $form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
           $form[$form['#info'][$filter]['operator']]['#states']['enabled'] = [
             ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
