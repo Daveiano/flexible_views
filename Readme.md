@@ -42,7 +42,7 @@ This module requires the following modules:
 
  * Views
 
-# Installation
+## Installation
 
 Install as you would normally install a contributed Drupal module.
 Visit

@@ -253,4 +253,30 @@ class ManualSelectionTest extends WebDriverTestBase {
     $this->assertEqual(count($manual_select_options), 1, 'Incorrect manual select options count.');
   }
 
+  /**
+   * Checks visibility of filters after change sorting.
+   */
+  public function testFilterVisibilityAfterSorting() {
+    // Load the linked page display.
+    $this->drupalGet('admin/test-flexible-views');
+
+    // Change the sorting.
+    $content_type_header = $this->xpath("//th[@id='view-type-table-column']/a");
+    $content_type_header[0]->click();
+
+    // Check that the e.g. body filter is invisible.
+    $this->assertFalse(
+      $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//input[@id='edit-body-value-check-deactivate']")->isVisible(),
+      'Body filter value is visible'
+    );
+    $this->assertFalse(
+      $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//select[@id='edit-body-value-op']")->isVisible(),
+      'Body filter op is visible'
+    );
+    $this->assertFalse(
+      $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//input[@id='edit-body-value']")->isVisible(),
+      'Body filter value is visible'
+    );
+  }
+
 }
