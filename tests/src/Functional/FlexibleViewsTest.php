@@ -42,7 +42,7 @@ class FlexibleViewsTest extends ViewTestBase {
    *
    * @todo Create base class for this and extend from there.
    */
-  protected function setUp($import_test_views = TRUE) {
+  protected function setUp($import_test_views = TRUE) : void {
     parent::setUp($import_test_views);
 
     $account = $this->drupalCreateUser([
