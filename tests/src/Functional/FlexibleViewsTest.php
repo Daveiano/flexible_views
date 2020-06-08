@@ -3,6 +3,7 @@
 namespace Drupal\Tests\flexible_views\Functional;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Tests\BrowserTestBase;
 use Drupal\views\Tests\ViewTestData;
 use Drupal\Tests\views\Functional\ViewTestBase;
 
@@ -11,7 +12,7 @@ use Drupal\Tests\views\Functional\ViewTestBase;
  *
  * @group flexible_views
  */
-class FlexibleViewsTest extends ViewTestBase {
+class FlexibleViewsTest extends BrowserTestBase {
 
   /**
    * Modules to enable.
@@ -42,8 +43,8 @@ class FlexibleViewsTest extends ViewTestBase {
    *
    * @todo Create base class for this and extend from there.
    */
-  protected function setUp($import_test_views = TRUE) : void {
-    parent::setUp($import_test_views);
+  protected function setUp() : void {
+    parent::setUp();
 
     $account = $this->drupalCreateUser([
       'access content',
