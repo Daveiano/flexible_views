@@ -8,7 +8,7 @@ use Drupal\views\Tests\ViewTestData;
 /**
  * Tests the manual_selection exposed form.
  *
- * @group views
+ * @group flexible_views
  */
 class ManualSelectionTest extends WebDriverTestBase {
   /**

@@ -8,7 +8,7 @@ use Drupal\views\Tests\ViewTestData;
 /**
  * Tests the column_selector exposed filter.
  *
- * @group views
+ * @group flexible_views
  */
 class ColumnSelectorTest extends WebDriverTestBase {
   /**
@@ -37,8 +37,6 @@ class ColumnSelectorTest extends WebDriverTestBase {
 
   /**
    * {@inheritdoc}
-   *
-   * @todo Create base class for this and extend from there.
    */
   protected function setUp() {
     parent::setUp();
