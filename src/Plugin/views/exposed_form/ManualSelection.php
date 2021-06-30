@@ -134,14 +134,14 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     foreach ($checkboxes as $checkbox) {
       $filter_name = str_replace('_check_deactivate', '', $checkbox);
 
-      if (isset($form['#info']['filter-' . $filter_name]['operator']) &&$form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
+      if (isset($form['#info']['filter-' . $filter_name]['operator']) && $form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
         $weight = $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'];
       }
       else {
         $weight = $form[$filter_name]['#weight'];
       }
 
-      $form[$checkbox]['#weight'] = floatval($weight) - 0.001;
+      $form[$checkbox]['#weight'] = floatval($weight) - 0.0001;
     }
 
     // Sort always visible filters.
@@ -221,6 +221,13 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       $filter_name = str_replace('filter-', '', $filter);
 
       if (!in_array($filter_name, $filter_always_visible, TRUE)) {
+        // Fix for "mismatching in filter naming" - eg. the "combine field
+        //  filter username or mail" is named user but the $filter_name is
+        //  filter-combine.
+        if (!isset($form[$filter_name]) && isset($form[$form['#info'][$filter]['value']])) {
+          $filter_name = $form['#info'][$filter]['value'];
+        }
+
         // Wrap each pair of filters with html div.
         $form[$filter_name]['#suffix'] = '</div>';
         $form[$filter_name]['#chosen'] = FALSE;
@@ -293,13 +300,24 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       else {
         // Wrap the always visible filters with a wrap.
         if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
+          // The filter has an operator.
           $form[$form['#info'][$filter]['operator']]['#title_display'] = 'invisible';
           $form[$form['#info'][$filter]['operator']]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
           // Disable chosen.
           $form[$form['#info'][$filter]['operator']]['#chosen'] = FALSE;
         }
-        else {
+        elseif (isset($form[$filter_name])) {
           $form[$filter_name]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
+        }
+        else {
+          $form[$form['#info'][$filter]['value']]['#prefix'] = "<div class='filter-wrap always-visible'><span class='label'>{$form['#info'][$filter]['label']}</span>";
+        }
+
+        // Fix for "mismatching in filter naming" - eg. the "combine field
+        //  filter username or mail" is named user but the $filter_name is
+        //  filter-combine.
+        if (!isset($form[$filter_name]) && isset($form[$form['#info'][$filter]['value']])) {
+          $filter_name = $form['#info'][$filter]['value'];
         }
 
         // Label handling.
