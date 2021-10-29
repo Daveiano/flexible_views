@@ -9,8 +9,8 @@ dependencies:
     - node
     - text
     - user
-id: test_flexible_views
-label: test_flexible_views
+id: test_flexible_views_pager
+label: test_flexible_views_pager
 module: views
 description: ''
 tag: ''
@@ -57,10 +57,13 @@ display:
       pager:
         type: mini
         options:
-          items_per_page: 10
+          items_per_page: 3
           offset: 0
           id: 0
           total_pages: null
+          tags:
+            previous: ‹‹
+            next: ››
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -69,9 +72,6 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
-          tags:
-            previous: ‹‹
-            next: ››
       style:
         type: flexible_table
         options:
@@ -543,7 +543,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/test-flexible-views
+      path: admin/test-flexible-views-pager
     cache_metadata:
       max-age: -1
       contexts:
