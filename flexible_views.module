@@ -49,16 +49,89 @@ function flexible_views_theme() {
 function flexible_views_preprocess_pager(&$variables) {
   $element = $variables['pager']['#element'];
   $parameters = $variables['pager']['#parameters'];
-  $quantity = $variables['pager']['#quantity'];
+  $quantity = empty($variables['pager']['#quantity']) ? 0 : $variables['pager']['#quantity'];
   $route_name = $variables['pager']['#route_name'];
   $route_parameters = isset($variables['pager']['#route_parameters']) ? $variables['pager']['#route_parameters'] : [];
-  global $pager_page_array, $pager_total;
 
-  /* @var $pager_manager \Drupal\Core\Pager\PagerManagerInterface */
+  /** @var \Drupal\Core\Pager\PagerManagerInterface $pager_manager */
   $pager_manager = \Drupal::service('pager.manager');
+  $pager = $pager_manager->getPager($element);
 
   // Get the current view.
   $route = \Drupal::routeMatch()->getRouteObject();
+  flexible_views_alter_pager_parameters($route, $parameters);
+
+  if (isset($variables['items']['first'])) {
+    $options = [
+      'query' => $pager_manager->getUpdatedParameters($parameters, $element, 0),
+    ];
+    $variables['items']['first']['href'] = Url::fromRoute($route_name, $route_parameters, $options)->toString();
+  }
+
+  if (isset($variables['items']['previous'])) {
+    $current_page = $pager->getCurrentPage();
+    $options = [
+      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $current_page - 1),
+    ];
+    $variables['items']['previous']['href'] = Url::fromRoute($route_name, $route_parameters, $options)->toString();
+  }
+
+  if (isset($variables["items"]["pages"])) {
+    foreach ($variables["items"]["pages"] as $key => &$page) {
+      $options = [
+        'query' => $pager_manager->getUpdatedParameters($parameters, $element, $key - 1),
+      ];
+      $page['href'] = Url::fromRoute($route_name, $route_parameters, $options)->toString();
+    }
+  }
+
+  if (isset($variables['items']['next'])) {
+    $current_page = $pager->getCurrentPage();
+    $options = [
+      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $current_page + 1),
+    ];
+    $variables['items']['next']['href'] = Url::fromRoute($route_name, $route_parameters, $options)->toString();
+  }
+
+  if (isset($variables['items']['last'])) {
+    $pager_max = $pager->getTotalPages();
+    $options = [
+      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $pager_max - 1),
+    ];
+    $variables['items']['last']['href'] = Url::fromRoute($route_name, $route_parameters, $options)->toString();
+  }
+}
+
+function flexible_views_preprocess_views_mini_pager(&$variables) {
+  /** @var \Drupal\Core\Pager\PagerManagerInterface $pager_manager */
+  $pager_manager = \Drupal::service('pager.manager');
+
+  $element = $variables['element'];
+  $parameters = $variables['parameters'];
+  $pager = $pager_manager->getPager($element);
+
+  // Get the current view.
+  $route = \Drupal::routeMatch()->getRouteObject();
+  flexible_views_alter_pager_parameters($route, $parameters);
+
+  if (isset($variables['items']['previous'])) {
+    $current = $pager->getCurrentPage();
+    $options = [
+      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $current - 1),
+    ];
+    $variables['items']['previous']['href'] = Url::fromRoute('<current>', [], $options)->toString();
+  }
+
+  if (isset($variables['items']['next'])) {
+    $current = $pager->getCurrentPage();
+    $options = [
+      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $current + 1),
+    ];
+    $variables['items']['next']['href'] = Url::fromRoute('<current>', [], $options)->toString();
+  }
+}
+
+function flexible_views_alter_pager_parameters($route, &$parameters) {
   if ($route) {
     // Get view id and display id from route.
     $view_id = $route->getDefault('view_id');
@@ -93,112 +166,4 @@ function flexible_views_preprocess_pager(&$variables) {
       }
     }
   }
-
-  // Nothing to do if there is only one page.
-  if ($pager_total[$element] <= 1) {
-    return;
-  }
-  $tags = $variables['pager']['#tags'];
-
-  // Calculate various markers within this pager piece:
-  // Middle is used to "center" pages around the current page.
-  $pager_middle = ceil($quantity / 2);
-
-  // Current is the page we are currently paged to.
-  $pager_current = $pager_page_array[$element] + 1;
-
-  // First is the first page listed by this pager piece (re quantity).
-  $pager_first = $pager_current - $pager_middle + 1;
-
-  // Last is the last page listed by this pager piece (re quantity).
-  $pager_last = $pager_current + $quantity - $pager_middle;
-
-  // Max is the maximum page number.
-  $pager_max = $pager_total[$element];
-
-  // End of marker calculations.
-  // Prepare for generation loop.
-  $i = $pager_first;
-  if ($pager_last > $pager_max) {
-
-    // Adjust "center" if at end of query.
-    $i = $i + ($pager_max - $pager_last);
-    $pager_last = $pager_max;
-  }
-  if ($i <= 0) {
-
-    // Adjust "center" if at start of query.
-    $pager_last = $pager_last + (1 - $i);
-    $i = 1;
-  }
-
-  // End of generation loop preparation.
-  // Create the "first" and "previous" links if we are not on the first page.
-  if ($pager_page_array[$element] > 0) {
-    $items['first'] = [];
-    $options = [
-      'query' => $pager_manager->getUpdatedParameters($parameters, $element, 0),
-    ];
-    $items['first']['href'] = Url::fromRoute($route_name, $route_parameters, $options);
-    if (isset($tags[0])) {
-      $items['first']['text'] = $tags[0];
-    }
-    $items['previous'] = [];
-    $options = [
-      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $pager_page_array[$element] - 1),
-    ];
-    $items['previous']['href'] = Url::fromRoute($route_name, $route_parameters, $options);
-    if (isset($tags[1])) {
-      $items['previous']['text'] = $tags[1];
-    }
-  }
-  if ($i != $pager_max) {
-
-    // Add an ellipsis if there are further previous pages.
-    if ($i > 1) {
-      $variables['ellipses']['previous'] = TRUE;
-    }
-
-    // Now generate the actual pager piece.
-    for (; $i <= $pager_last && $i <= $pager_max; $i++) {
-      $options = [
-        'query' => $pager_manager->getUpdatedParameters($parameters, $element, $i - 1),
-      ];
-      $items['pages'][$i]['href'] = Url::fromRoute($route_name, $route_parameters, $options);
-      if ($i == $pager_current) {
-        $variables['current'] = $i;
-      }
-    }
-
-    // Add an ellipsis if there are further next pages.
-    if ($i < $pager_max + 1) {
-      $variables['ellipses']['next'] = TRUE;
-    }
-  }
-
-  // Create the "next" and "last" links if we are not on the last page.
-  if ($pager_page_array[$element] < $pager_max - 1) {
-    $items['next'] = [];
-    $options = [
-      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $pager_page_array[$element] + 1),
-    ];
-    $items['next']['href'] = Url::fromRoute($route_name, $route_parameters, $options);
-    if (isset($tags[3])) {
-      $items['next']['text'] = $tags[3];
-    }
-    $items['last'] = [];
-    $options = [
-      'query' => $pager_manager->getUpdatedParameters($parameters, $element, $pager_max - 1),
-    ];
-    $items['last']['href'] = Url::fromRoute($route_name, $route_parameters, $options);
-    if (isset($tags[4])) {
-      $items['last']['text'] = $tags[4];
-    }
-  }
-  $variables['items'] = $items;
-
-  // The rendered link needs to play well with any other query parameter used
-  // on the page, like exposed filters, so for the cacheability all query
-  // parameters matter.
-  $variables['#cache']['contexts'][] = 'url.query_args';
 }

@@ -9,8 +9,8 @@ dependencies:
     - node
     - text
     - user
-id: test_flexible_views_pager
-label: test_flexible_views_pager
+id: test_flexible_views_pager_mini
+label: test_flexible_views_pager_mini
 module: views
 description: ''
 tag: ''
@@ -55,7 +55,7 @@ display:
             type_1: '0'
             body_value: '0'
       pager:
-        type: full
+        type: mini
         options:
           items_per_page: 3
           offset: 0
@@ -64,8 +64,6 @@ display:
           tags:
             previous: ‹‹
             next: ››
-            first: '« First'
-            last: 'Last »'
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -74,7 +72,6 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
-          quantity: 9
       style:
         type: flexible_table
         options:
@@ -546,7 +543,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/test-flexible-views-pager
+      path: admin/test-flexible-views-pager-mini
     cache_metadata:
       max-age: -1
       contexts:
