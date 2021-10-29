@@ -16,7 +16,7 @@ class ColumnSelectorTest extends WebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'views_ui',
     'flexible_views',
     'flexible_views_test',
@@ -38,7 +38,7 @@ class ColumnSelectorTest extends WebDriverTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $account = $this->drupalCreateUser([
@@ -116,7 +116,7 @@ class ColumnSelectorTest extends WebDriverTestBase {
     // Verify the number of columns.
     // TODO: Write better selector.
     $columns = $this->xpath("//table/thead/tr/th");
-    $this->assertEqual(count($columns), 2, 'Wrong column count');
+    $this->assertEquals(2, count($columns), 'Wrong column count');
 
     $this->assertSession()->pageTextNotContains(t('Node Content Body 4'));
 
@@ -135,7 +135,7 @@ class ColumnSelectorTest extends WebDriverTestBase {
     // Verify the number of columns.
     // TODO: Write better selector.
     $columns = $this->xpath("//table/thead/tr/th");
-    $this->assertEqual(count($columns), 3, 'Wrong column count');
+    $this->assertEquals(3, count($columns), 'Wrong column count');
 
     $this->assertSession()->pageTextContains(t('Node Content Body 4'));
   }
@@ -163,7 +163,7 @@ class ColumnSelectorTest extends WebDriverTestBase {
 
     // TODO: Write better selector.
     $columns = $this->xpath("//table/thead/tr/th");
-    $this->assertEqual(count($columns), 2, 'Wrong column count');
+    $this->assertEquals(2, count($columns), 'Wrong column count');
 
     $this->assertSession()->pageTextNotContains(t('Node Content Body 4'));
   }

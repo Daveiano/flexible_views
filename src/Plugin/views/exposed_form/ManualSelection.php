@@ -77,7 +77,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#default_value' => $this->options['filter_always_visible'],
     ];
 
-    /* @var \Drupal\views\Plugin\views\HandlerBase $filter */
+    /** @var \Drupal\views\Plugin\views\HandlerBase $filter **/
     foreach ($filters as $label => $filter) {
       if ($filter->isExposed() && $filter->realField !== 'column_selector') {
         $form['filter_always_visible']['#options'][$label] = $filter->options["expose"]["label"];
@@ -126,7 +126,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
    * @return array
    *   The form array.
    */
-  public static function sortCheckboxes(array $form, array $filter_always_visible = []) {
+  public static function sortCheckboxes(array $form, array $filter_always_visible = []): array {
     $checkboxes = array_filter(array_keys($form), function ($element) {
       return strpos($element, '_check_deactivate');
     });
@@ -135,25 +135,53 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       $filter_name = str_replace('_check_deactivate', '', $checkbox);
 
       if (isset($form['#info']['filter-' . $filter_name]['operator']) && $form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
+        $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'] = $form[$filter_name]['#weight'] - 0.001;
         $weight = $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'];
       }
       else {
         $weight = $form[$filter_name]['#weight'];
       }
 
-      $form[$checkbox]['#weight'] = floatval($weight) - 0.0001;
+      $form[$checkbox]['#weight'] = floatval($weight) - 0.001;
     }
 
-    // Sort always visible filters.
+    // Sort always_visible filters.
     foreach (array_keys(array_filter($filter_always_visible)) as $filter) {
       $form[$filter]['#weight'] = $form[$filter]['#weight'] - 100;
 
       if ($form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
-        $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] - 100;
+        $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$filter]['#weight'] - 101;
       }
     }
 
     return $form;
+  }
+
+  /**
+   * Remove fieldsets around filters with operators.
+   *
+   * @param array $form
+   *   The exposed form.
+   * @param array $filters
+   *   The current filters.
+   */
+  public static function removeWrapperFieldSets(array &$form, array $filters) {
+    foreach ($filters as $filter) {
+      $filter = str_replace('filter-', '', $filter);
+
+      if (isset($form[$filter . '_wrapper'])) {
+        // Copy filter.
+        $form[$filter] = $form[$filter . '_wrapper'][$filter];
+
+        // Copy operator.
+        if (isset($form[$filter . '_wrapper'][$filter . '_op'])) {
+          $form[$filter . '_op'] = $form[$filter . '_wrapper'][$filter . '_op'];
+        }
+
+        // Remove fieldset.
+        unset($form[$filter . '_wrapper']);
+      }
+    }
   }
 
   /**
@@ -163,10 +191,9 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     $form = parent::renderExposedForm($block);
 
     // Set the correct weight for the deactivate_checkboxes.
-    $filter_always_visible = isset($this->options['filter_always_visible']) ? $this->options['filter_always_visible'] : [];
-    $form = self::sortCheckboxes($form, $filter_always_visible);
+    $filter_always_visible = $this->options['filter_always_visible'] ?? [];
 
-    return $form;
+    return self::sortCheckboxes($form, $filter_always_visible);
   }
 
   /**
@@ -179,7 +206,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
     $form['#attributes']['class'][] = 'manual-selection-form';
 
     $filters = array_keys($form['#info']);
-    // TODO: Dependency injection.
+    // @todo Dependency injection.
     $query = TableSort::getQueryParameters(\Drupal::request());
     $filter_always_visible = isset($this->options['filter_always_visible']) ? array_filter($this->options['filter_always_visible']) : [];
     $manual_select_filter_options = [];
@@ -208,7 +235,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         '#type' => 'details',
         '#open' => FALSE,
         '#title' => $this->options['details_label'],
-        '#weight' => -80,
+        '#weight' => -180,
         '#attributes' => [
           'style' => 'float: none;clear: both;',
           'class' => ['flexible-views-manual-selection-details'],
@@ -216,14 +243,16 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       ];
     }
 
+    self::removeWrapperFieldSets($form, $filters);
+
     // Deactivate the filters on default.
     foreach ($filters as $filter) {
       $filter_name = str_replace('filter-', '', $filter);
 
       if (!in_array($filter_name, $filter_always_visible, TRUE)) {
         // Fix for "mismatching in filter naming" - eg. the "combine field
-        //  filter username or mail" is named user but the $filter_name is
-        //  filter-combine.
+        // filter username or mail" is named user but the $filter_name is
+        // filter-combine.
         if (!isset($form[$filter_name]) && isset($form[$form['#info'][$filter]['value']])) {
           $filter_name = $form['#info'][$filter]['value'];
         }
@@ -261,10 +290,16 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           $form[$filter_name]['value']['#states']['enabled'][] = [
             ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
           ];
+          $form[$filter_name]['value']['#states']['invisible'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
+          ];
         }
         else {
           $form[$filter_name]['#states']['enabled'][] = [
             ":input[name='{$filter_name}_check_deactivate']" => ['checked' => TRUE],
+          ];
+          $form[$filter_name]['#states']['invisible'][] = [
+            ":input[name='{$filter_name}_check_deactivate']" => ['checked' => FALSE],
           ];
         }
 
@@ -314,8 +349,8 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
         }
 
         // Fix for "mismatching in filter naming" - eg. the "combine field
-        //  filter username or mail" is named user but the $filter_name is
-        //  filter-combine.
+        // filter username or mail" is named user but the $filter_name is
+        // filter-combine.
         if (!isset($form[$filter_name]) && isset($form[$form['#info'][$filter]['value']])) {
           $filter_name = $form['#info'][$filter]['value'];
         }

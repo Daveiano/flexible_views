@@ -18,7 +18,7 @@ class FlexibleViewsTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'views_ui',
     'flexible_views',
     'flexible_views_test',
@@ -40,7 +40,7 @@ class FlexibleViewsTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $account = $this->drupalCreateUser([
@@ -160,25 +160,25 @@ class FlexibleViewsTest extends BrowserTestBase {
 
     // Check the available select.
     $available_select = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-available-columns']");
-    $this->assertEqual(count($available_select), 1, 'Available select form element is visible.');
+    $this->assertEquals(1, count($available_select), 'Available select form element is visible.');
 
     // Check for the right options in the available select.
     $available_select_options = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-available-columns']/option");
-    $this->assertEqual(count($available_select_options), 1, 'Correct available select option count.');
+    $this->assertEquals(1, count($available_select_options), 'Correct available select option count.');
     $available_select_option = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-available-columns']/option[@value='body']");
-    $this->assertEqual(count($available_select_option), 1, 'Correct available select option is visible.');
+    $this->assertEquals(1, count($available_select_option), 'Correct available select option is visible.');
 
     // Check the selected select.
     $selected_select = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-selected-columns']");
-    $this->assertEqual(count($selected_select), 1, 'Selected select form element is visible.');
+    $this->assertEquals(1, count($selected_select), 'Selected select form element is visible.');
 
     // Check for the right options in the selected select.
     $selected_select_options = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-selected-columns']/option");
-    $this->assertEqual(count($selected_select_options), 2, 'Correct selected select option count.');
+    $this->assertEquals(2, count($selected_select_options), 'Correct selected select option count.');
     $selected_select_option1 = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-selected-columns']/option[@value='title']");
-    $this->assertEqual(count($selected_select_option1), 1, 'Correct selected select option is visible.');
+    $this->assertEquals(1, count($selected_select_option1), 'Correct selected select option is visible.');
     $selected_select_option2 = $this->xpath("//*[@id='edit-flexible-tables-fieldset']//select[@id='flexible-table-selected-columns']/option[@value='type']");
-    $this->assertEqual(count($selected_select_option2), 1, 'Correct selected select option is visible.');
+    $this->assertEquals(1, count($selected_select_option2), 'Correct selected select option is visible.');
 
     // Check for the buttons.
     $this->assertSession()->elementExists('xpath', "//div[@class='form-item move-buttons']/div[@class='move-right']");
@@ -224,7 +224,7 @@ class FlexibleViewsTest extends BrowserTestBase {
 
     // Verify that the select contains the right options.
     $manual_select_options = $this->xpath("//select[@id='edit-manual-select-filter']/option");
-    $this->assertEqual(count($manual_select_options), 3, 'Correct manual select options count.');
+    $this->assertEquals(3, count($manual_select_options), 'Correct manual select options count.');
     $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='body_value']");
     $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='type_1']");
 

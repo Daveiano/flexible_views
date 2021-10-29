@@ -16,7 +16,7 @@ class ManualSelectionTest extends WebDriverTestBase {
    *
    * @var array
    */
-  public static $modules = [
+  protected static $modules = [
     'views_ui',
     'flexible_views',
     'flexible_views_test',
@@ -43,7 +43,7 @@ class ManualSelectionTest extends WebDriverTestBase {
    *
    * @todo Create base class for this and extend from there.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $account = $this->drupalCreateUser([
@@ -250,7 +250,7 @@ class ManualSelectionTest extends WebDriverTestBase {
 
     // Check select options count.
     $manual_select_options = $this->xpath("//select[@id='edit-manual-select-filter']/option");
-    $this->assertEqual(count($manual_select_options), 1, 'Incorrect manual select options count.');
+    $this->assertEquals(1, count($manual_select_options), 'Incorrect manual select options count.');
   }
 
   /**
