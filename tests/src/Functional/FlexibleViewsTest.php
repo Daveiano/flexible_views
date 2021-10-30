@@ -224,24 +224,32 @@ class FlexibleViewsTest extends BrowserTestBase {
 
     // Verify that the select contains the right options.
     $manual_select_options = $this->xpath("//select[@id='edit-manual-select-filter']/option");
-    $this->assertEquals(3, count($manual_select_options), 'Correct manual select options count.');
+    $this->assertEquals(8, count($manual_select_options), 'Correct manual select options count.');
     $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='body_value']");
-    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='type_1']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='created']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='nid']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='promote']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='status_1']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='vid']");
+    $this->assertSession()->elementExists('xpath', "//select[@id='edit-manual-select-filter']/option[@value='uuid']");
 
     // Check that the title filter is present.
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap always-visible']/span[@class='label']");
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap always-visible']//select[@id='edit-title-op']");
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap always-visible']//input[@id='edit-title']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap always-visible']/span[@class='label']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap always-visible']/div/select[@id='edit-title-op']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap always-visible']/div/input[@id='edit-title']");
+
+    // Check that the type filter is present.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap always-visible']/div/select[@id='edit-type-1-op']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap always-visible']/div/select[@id='edit-type-1']");
 
     // Check that the body filter is present.
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']");
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-body-value-op']");
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-body-value']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap']//input[@id='edit-body-value-check-deactivate']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap']//select[@id='edit-body-value-op']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap']//input[@id='edit-body-value']");
 
-    // Check that the type_1 filter is present.
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//input[@id='edit-type-1-check-deactivate']");
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-type-1-op']");
-    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']//div[@class='filter-wrap']//select[@id='edit-type-1']");
+    // Check that the uuid filter is present.
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap']//input[@id='edit-uuid-check-deactivate']");
+    $this->assertSession()->elementExists('xpath', "//form[@class='views-exposed-form manual-selection-form']/div[@class='filter-wrap']//input[@id='edit-uuid']");
   }
 
 }

@@ -131,18 +131,31 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       return strpos($element, '_check_deactivate');
     });
 
+    $highest_weight = 0;
+
     foreach ($checkboxes as $checkbox) {
       $filter_name = str_replace('_check_deactivate', '', $checkbox);
 
       if (isset($form['#info']['filter-' . $filter_name]['operator']) && $form['#info']['filter-' . $filter_name]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter_name]['operator']])) {
-        $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'] = $form[$filter_name]['#weight'] - 0.001;
+        $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'] = $form[$filter_name]['#weight'] - 0.0001;
         $weight = $form[$form['#info']['filter-' . $filter_name]['operator']]['#weight'];
       }
       else {
         $weight = $form[$filter_name]['#weight'];
+
+        if ($form[$filter_name]['#weight'] > $highest_weight) {
+          $highest_weight = $form[$filter_name]['#weight'];
+        }
       }
 
       $form[$checkbox]['#weight'] = floatval($weight) - 0.001;
+    }
+
+    if (isset($form["flexible_tables_fieldset"])) {
+      $form["flexible_tables_fieldset"]['#weight'] = $highest_weight + 1;
+    }
+    if (isset($form["selected_filters"])) {
+      $form["selected_filters"]['#weight'] = $highest_weight + 1.1;
     }
 
     // Sort always_visible filters.
@@ -150,7 +163,12 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       $form[$filter]['#weight'] = $form[$filter]['#weight'] - 100;
 
       if ($form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
-        $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$filter]['#weight'] - 101;
+        if ($form[$form['#info']['filter-' . $filter]['operator']]['#weight'] >= $form[$filter]['#weight']) {
+          $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$filter]['#weight'] - 0.001;
+        }
+        else {
+          $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] - 100;
+        }
       }
     }
 
@@ -375,7 +393,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
       '#empty_value' => '',
       '#empty_option' => $this->t('- Select a filter -'),
       '#default_value' => '',
-      '#weight' => -99,
+      '#weight' => -10,
       '#chosen' => FALSE,
     ];
 
