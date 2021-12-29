@@ -110,6 +110,10 @@ class ColumnSelector extends FilterPluginBase {
   public function buildExposedForm(&$form, FormStateInterface $form_state) {
     parent::buildExposedForm($form, $form_state);
 
+    if (empty($form_state->getStorage()['view'])) {
+      return;
+    }
+
     $form['#attached']['library'][] = 'flexible_views/column_selector';
 
     $fields = $form_state->getStorage()['view']->style_plugin->options['info'];
