@@ -176,7 +176,7 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
     // Add the columns which are always visible.
     $columns_reverse = array_reverse($columns, TRUE);
     foreach ($columns_reverse as $index => $column) {
-      if (!in_array($column, $column_order) && $options['info'][$column]['default_visible']) {
+      if (!in_array($column, $column_order) && isset($options['info'][$column]) && $options['info'][$column]['default_visible']) {
         $original_position = $fields[$column]->position;
 
         if ($original_position >= count($column_order)) {
@@ -220,7 +220,9 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
 
     $field_flexible_logic_is_visible = isset($column_settings) ?
       in_array($field, Json::decode($column_settings)) || $always_visible :
-      $options['info'][$field]['default_visible'] || $always_visible;
+      (isset($options['info'][$field]) ?
+        $options['info'][$field]['default_visible'] || $always_visible :
+        $always_visible);
 
     // Render the header labels.
     if ($field == $column && empty($fields[$field]->options['exclude']) && $field_flexible_logic_is_visible) {

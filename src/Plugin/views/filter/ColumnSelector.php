@@ -147,7 +147,7 @@ class ColumnSelector extends FilterPluginBase {
           $options[$field_name] = $field_info->options['label'];
         }
         // Defaults.
-        if ($fields[$field_name]['default_visible']) {
+        if (isset($fields[$field_name]['default_visible']) && $fields[$field_name]['default_visible']) {
           $options_default_visible[$field_name] = $field_info->options['label'];
         }
       }
