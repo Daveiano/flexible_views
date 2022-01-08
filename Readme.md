@@ -34,8 +34,6 @@ src="https://www.drupal.org/files/flexible-views-manual-selection_0.png"
 alt="Flexible Views: Manual selection plugin"
 />
 
-<strong>Docs will be available soon!</strong>
-
 ## Requirements
 
 This module requires the following modules:

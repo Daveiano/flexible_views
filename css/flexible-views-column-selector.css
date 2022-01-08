@@ -49,6 +49,7 @@
   display: none;
 }
 
-.js-form-item.form-item.form-item-selected-columns-submit-order {
+.js-form-item.form-item.form-item-selected-columns-submit-order,
+.js-form-item.form-item.form-item--selected-columns-submit-order {
   display: none;
 }
