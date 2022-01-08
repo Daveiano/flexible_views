@@ -3,6 +3,7 @@
 namespace Drupal\flexible_views\Plugin\views\filter;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Utility\TableSort;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
@@ -245,6 +246,25 @@ EOT;
     // Clear the validation error on the selected_columns field. We supply an
     // empty array [] as options, but the user can select something and this
     // results in a validation error.
+    if (isset($form['filters']) && isset($form['filters']['children'])) {
+      $parents = $this->getKey($form['filters'], ['filters']);
+      if ($form_state->getError(NestedArray::getValue($form, $parents))) {
+        $form_errors = $form_state->getErrors();
+        // Clear the form errors.
+        $form_state->clearErrors();
+
+        // Remove the form error.
+        unset($form_errors['selected_columns']);
+
+        // Now loop through and re-apply the remaining form error messages.
+        foreach ($form_errors as $name => $error_message) {
+          $form_state->setErrorByName($name, $error_message);
+        }
+      }
+      return;
+    }
+
+    // Do the same for a simpler structure.
     if ($form_state->getError($form['flexible_tables_fieldset']['selected_columns'])) {
       $form_errors = $form_state->getErrors();
 
@@ -259,6 +279,33 @@ EOT;
         $form_state->setErrorByName($name, $error_message);
       }
     }
+  }
+
+  /**
+   * Helper method for getting form errors.
+   *
+   * @param array $subjectArray
+   *   The form array to check.
+   * @param array $chain
+   *   The selector chain.
+   *
+   * @see https://www.drupal.org/project/flexible_views/issues/3247363
+   *
+   * @return array
+   *   The filled selector chain.
+   */
+  public function getKey(array $subjectArray, array $chain) {
+    $result = NestedArray::getValue($subjectArray, ['children']);
+    foreach ($result as $key => $values) {
+      if (strpos($key, 'container') !== FALSE) {
+        array_push($chain, 'children', $key);
+        break;
+      }
+      if ($key == 'flexible_tables_fieldset') {
+        return $chain;
+      }
+    }
+    return is_array($values) ? $this->getKey($values, $chain) : [];
   }
 
   /**
