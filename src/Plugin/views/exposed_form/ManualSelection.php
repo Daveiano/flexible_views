@@ -160,9 +160,9 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
 
     // Sort always_visible filters.
     foreach (array_keys(array_filter($filter_always_visible)) as $filter) {
-      $form[$filter]['#weight'] = $form[$filter]['#weight'] - 100;
+      $form[$filter]['#weight'] = ($form[$filter]['#weight'] ?? 0) - 100;
 
-      if ($form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
+      if (($form['#info']['filter-' . $filter]['operator'] ?? FALSE) && $form['#info']['filter-' . $filter]['operator'] !== "" && isset($form[$form['#info']['filter-' . $filter]['operator']])) {
         if ($form[$form['#info']['filter-' . $filter]['operator']]['#weight'] >= $form[$filter]['#weight']) {
           $form[$form['#info']['filter-' . $filter]['operator']]['#weight'] = $form[$filter]['#weight'] - 0.001;
         }
@@ -341,7 +341,7 @@ class ManualSelection extends ExposedFormPluginBase implements ContainerFactoryP
           $form['manual_selection_filter_details'][$filter_name . '_check_deactivate'] = $form[$filter_name . '_check_deactivate'];
           unset($form[$filter_name . '_check_deactivate']);
 
-          if ($form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
+          if (($form['#info'][$filter]['operator'] ?? FALSE) && $form['#info'][$filter]['operator'] !== "" && isset($form[$form['#info'][$filter]['operator']])) {
             $form['manual_selection_filter_details'][$form['#info'][$filter]['operator']] = $form[$form['#info'][$filter]['operator']];
             unset($form[$form['#info'][$filter]['operator']]);
           }

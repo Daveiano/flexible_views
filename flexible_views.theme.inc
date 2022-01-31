@@ -218,11 +218,9 @@ function template_preprocess_views_view_flexible_table(array &$variables) {
       'operations',
     ]);
 
-    $field_flexible_logic_is_visible = isset($column_settings) ?
-      in_array($field, Json::decode($column_settings)) || $always_visible :
-      (isset($options['info'][$field]) ?
-        $options['info'][$field]['default_visible'] || $always_visible :
-        $always_visible);
+    $field_flexible_logic_is_visible = isset($column_settings)
+      ? in_array($field, Json::decode($column_settings)) || $always_visible
+      : ($options['info'][$field]['default_visible'] ?? $always_visible) || $always_visible;
 
     // Render the header labels.
     if ($field == $column && empty($fields[$field]->options['exclude']) && $field_flexible_logic_is_visible) {
